@@ -1,47 +1,109 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <!-- <loading-view /> -->
+    <the-header
+        class="md:block hidden"
+        @onClickCart="handleClickCart"
+        @onClickAccount="handleClickAccount"
+        @onClickNotification="handleClickNotification"
+    />
+    <transition name="fade">
+        <the-header-mobile
+            class="md:hidden block"
+            @onClickMenuMobile="handleClickSidebarMobile"
+        />
+    </transition>
+    <div class="app-content">
+        <router-view v-slot="{ Component }">
+            <transition name="fade">
+                <component :is="Component" />
+            </transition>
+        </router-view>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <the-account v-model="isExpandAccountProps" />
+    <the-cart v-model="isExpandCartProps" />
+    <the-side-bar-mobile v-model="isExpandSidebarMobileProps" />
+    <the-footer />
+    <popup-compare v-model="isOpenPopupCompare" />
+    <the-preview-compare />
+    <base-toast ref="toastRef" :config="toastConfig" />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script setup lang="ts">
+import { RouterView } from "vue-router";
+import TheHeader from "./layouts/TheHeader.vue";
+import TheHeaderMobile from "./layouts/TheHeaderMobile.vue";
+import TheFooter from "./layouts/TheFooter.vue";
+import {
+    TheCart,
+    TheAccount,
+    TheSideBarMobile,
+    ThePreviewCompare,
+} from "@/components/component";
+import LoadingView from "./views/loading/LoadingView.vue";
+import { useUserOptionStore, useToastStore } from "./stores";
+import { PopupCompare } from "./components/component";
+import { useCompareStore } from "./stores";
+import type { DxToast } from "devextreme-vue";
+import { ToastType } from "./enums";
+import { BaseToast } from "./components/base";
+import { ref, watch } from "vue";
+
+// #region handle events
+const compareStore = useCompareStore();
+const isOpenPopupCompare = ref<boolean>(compareStore.compare.isVisible);
+useUserOptionStore().initData();
+
+const toastRef = ref();
+
+const toastConfig = ref<DxToast>({
+    type: ToastType.success,
+    visible: false,
+    message: "Success!",
+});
+
+watch(
+    () => useToastStore().isShowToast,
+    (currentValue) => {
+        toastRef.value.instance?.option("visible", currentValue);
+    }
+);
+
+const isExpandCartProps = ref<boolean>(false);
+const isExpandAccountProps = ref<boolean>(false);
+const isExpandSidebarMobileProps = ref<boolean>(false);
+
+const handleClickCart = () => {
+    isExpandCartProps.value = true;
+};
+
+const handleClickSidebarMobile = () => {
+    isExpandSidebarMobileProps.value = true;
+};
+
+const handleClickAccount = () => {
+    isExpandAccountProps.value = true;
+};
+
+const handleClickNotification = () => {
+    console.log("Click notification");
+};
+// #endregion
+
+watch(
+    () => compareStore.compare.isVisible,
+    (currentValue) => {
+        isOpenPopupCompare.value = currentValue;
+    }
+);
+</script>
+
+<style lang="scss" scoped>
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease-out;
 }
 </style>
