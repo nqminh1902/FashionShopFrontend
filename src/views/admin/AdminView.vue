@@ -1,7 +1,10 @@
 <template>
     <div id="admin">Admin Page</div>
+    <router-view></router-view>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouterView } from "vue-router";
+</script>
 
 <style lang="scss" scoped></style>

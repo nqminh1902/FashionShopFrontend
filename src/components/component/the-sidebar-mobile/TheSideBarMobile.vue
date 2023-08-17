@@ -10,7 +10,7 @@
                                 :alt="`Logo ${t('app.name')}`"
                             />
                         </div>
-                        <div class="brand-name">{{ t('app.name') }}</div>
+                        <div class="brand-name">{{ t("app.name") }}</div>
                     </a>
                     <Icon
                         class="cursor-pointer"
@@ -77,10 +77,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
-import { Icon } from '@iconify/vue';
-import { headerBelow } from '@/constants/views';
-import { useI18n } from 'vue3-i18n';
+import { computed, ref } from "vue";
+import { Icon } from "@iconify/vue";
+import { headerBelow } from "@/constants/views";
+import { useI18n } from "vue3-i18n";
 
 // #region common
 const { t, getLocale, setLocale } = useI18n();
@@ -90,7 +90,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: boolean): void;
+    (e: "update:modelValue", value: boolean): void;
 }>();
 
 const isExpand = computed({
@@ -98,7 +98,7 @@ const isExpand = computed({
         return props.modelValue ?? false;
     },
     set(newValue) {
-        emit('update:modelValue', newValue);
+        emit("update:modelValue", newValue);
     },
 });
 // #endregion

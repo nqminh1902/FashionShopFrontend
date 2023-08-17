@@ -23,26 +23,50 @@ const router = createRouter({
     routes: [
         {
             path: '',
+            name : 'fashionShop',
             meta: {
                 Title: t('app.title.home'),
             },
-            component: () => import('../views/home/HomeView.vue'),
+            children:[
+                {
+                    path: '',
+                    meta: {
+                        Title: t('app.title.home'),
+                    },
+                    component: () => import('../views/home/HomeView.vue'),
+                },
+                ...homeRouter,
+                ...aboutRouter,
+                ...contactRouter,
+                ...shopRouter,
+                ...cartRouter,
+                ...wishlistRouter,
+                ...collectionRouter,
+                ...accountRouter,
+                ...productRouter,
+                ...postRouter,
+                ...checkoutRouter,
+                ...recentRouter,
+                ...ordersRouter,
+            ],
+            component: () => import('../views/FashionShop/FashionShop.vue'),
         },
-        ...homeRouter,
-        ...aboutRouter,
-        ...contactRouter,
-        ...dashboardRouter,
-        ...shopRouter,
-        ...cartRouter,
-        ...wishlistRouter,
-        ...collectionRouter,
-        ...adminRouter,
-        ...accountRouter,
-        ...productRouter,
-        ...postRouter,
-        ...checkoutRouter,
-        ...recentRouter,
-        ...ordersRouter,
+        {
+            path: '/admin',
+            meta: {
+                Title: t('app.title.admin'),
+            },
+            children:[
+                {
+                    path: '',
+                    meta: {
+                        Title: t('app.title.admin'),
+                    },
+                    component: () => import('../views/dashboard/DashBoardView.vue'),
+                },
+            ],
+            component: () => import('../views/admin/AdminView.vue'),
+        },
         {
             path: '/:catchAll(.*)',
             component: () => import('../views/errorPages/404Page.vue'),

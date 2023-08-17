@@ -1,12 +1,8 @@
 <template>
-    <base-breadcrumbs :config="breadcrumbDashboardConfig" />
-    <div id="dashboard"></div>
+    <div id="dashboard">Đây là báo cáo</div>
 </template>
 
-<script setup lang="ts">
-import { BaseBreadcrumbs } from '@/components/base';
-import { breadcrumbDashboardConfig } from '@/constants/views';
-</script>
+<script setup lang="ts"></script>
 
 <style lang="scss" scoped>
 #dashboard {

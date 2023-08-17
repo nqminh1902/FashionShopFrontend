@@ -2,7 +2,7 @@
     <header>
         <div class="header-above">
             <div class="header-above-left">
-                {{ t('header.welcomeBack') }},
+                {{ t("header.welcomeBack") }},
                 {{ data.userOptions.UserName }}
             </div>
             <div class="header-above-right d-flex-center">
@@ -27,7 +27,7 @@
                         :alt="`Logo ${t('app.name')}`"
                     />
                 </div>
-                <div class="brand-name">{{ t('app.name') }}</div>
+                <div class="brand-name">{{ t("app.name") }}</div>
             </a>
             <div class="header-center-right">
                 <div
@@ -53,7 +53,7 @@
                             src="/src/assets/images/common/no_notification.png"
                             alt=""
                         />
-                        {{ t('page.homeView.noNoti') }}
+                        {{ t("page.homeView.noNoti") }}
                     </div>
                 </div>
             </div>
@@ -80,23 +80,23 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue3-i18n';
+import { useI18n } from "vue3-i18n";
 import {
     headerLanguagesData,
     headerUnitsData,
     headerCenterRight,
     headerBelow,
     headerIconFlags,
-} from '@/constants/views';
-import { FeatureName, LanguageEnum, UnitOption } from '@/enums';
-import { BaseDropDown, BaseAutoComplete } from '@/components/base';
-import { Icon } from '@iconify/vue';
-import { useRouter } from 'vue-router';
-import { onBeforeMount, onMounted } from 'vue';
-import { useCartStore } from '@/stores/cart';
-import { storeToRefs } from 'pinia';
-import type { DxAutocomplete } from 'devextreme-vue';
-import { useUserOptionStore } from '@/stores';
+} from "@/constants/views";
+import { FeatureName, LanguageEnum, UnitOption } from "@/enums";
+import { BaseDropDown, BaseAutoComplete } from "@/components/base";
+import { Icon } from "@iconify/vue";
+import { useRouter } from "vue-router";
+import { onBeforeMount, onMounted, ref, computed } from "vue";
+import { useCartStore } from "@/stores/cart";
+import { storeToRefs } from "pinia";
+import type { DxAutocomplete } from "devextreme-vue";
+import { useUserOptionStore } from "@/stores";
 
 // #region common
 const { t, getLocale, setLocale } = useI18n();
@@ -108,9 +108,9 @@ const isActiveItem = (id: number) => activeItem.value === id;
 const setActiveItem = (id: number) => (activeItem.value = id);
 
 const emit = defineEmits<{
-    (e: 'onClickCart'): void;
-    (e: 'onClickAccount'): void;
-    (e: 'onClickNotification'): void;
+    (e: "onClickCart"): void;
+    (e: "onClickAccount"): void;
+    (e: "onClickNotification"): void;
 }>();
 
 const autoCompleteConfig = ref<DxAutocomplete>({});
@@ -127,38 +127,38 @@ const currentLanguage = data.userOptions.LanguageOption ?? LanguageEnum.en;
 
 const currentLanguageDisplay = ref<string>(
     currentLanguage === LanguageEnum.en
-        ? t('header.languages.english')
-        : t('header.languages.vietnamese')
+        ? t("header.languages.english")
+        : t("header.languages.vietnamese")
 );
 
 const handleSetLanguage = (language: string) => {
-    let tempUnit = t('header.units.usd');
-    let tempLanguage = t('header.languages.english');
+    let tempUnit = t("header.units.usd");
+    let tempLanguage = t("header.languages.english");
     setLocale(language);
     data.changeLanguageOption(language);
     currentUnitDisplay.value =
         currentUnitDisplay.value === tempUnit
-            ? t('header.units.usd')
-            : t('header.units.vnd');
+            ? t("header.units.usd")
+            : t("header.units.vnd");
     currentLanguageDisplay.value =
         currentLanguageDisplay.value === tempLanguage
-            ? t('header.languages.english')
-            : t('header.languages.vietnamese');
+            ? t("header.languages.english")
+            : t("header.languages.vietnamese");
 };
 // #endregion
 
 // #region unit
 const currentUnitDisplay = ref<string>(
     data.userOptions.UnitOption === UnitOption.USD
-        ? t('header.units.usd')
-        : t('header.units.vnd')
+        ? t("header.units.usd")
+        : t("header.units.vnd")
 );
 
 const handleSetUnit = (unit: string) => {
     currentUnitDisplay.value = unit;
-    if (unit === t('header.units.usd')) {
+    if (unit === t("header.units.usd")) {
         data.changeUnitOption(UnitOption.USD);
-    } else if (unit === t('header.units.vnd')) {
+    } else if (unit === t("header.units.vnd")) {
         data.changeUnitOption(UnitOption.VND);
     }
 };
@@ -167,7 +167,7 @@ const handleSetUnit = (unit: string) => {
 // #region handle events
 const getCurrentLocale = (localize: string): string => {
     const result =
-        localize === t('header.languages.english')
+        localize === t("header.languages.english")
             ? LanguageEnum.en
             : LanguageEnum.vi;
     return result;
@@ -179,13 +179,13 @@ const handleClickFeature = (featureName: FeatureName) => {
         //     isOpenSearch.value = !isOpenSearch.value;
         //     break;
         case FeatureName.account:
-            emit('onClickAccount');
+            emit("onClickAccount");
             break;
         case FeatureName.notification:
-            emit('onClickNotification');
+            emit("onClickNotification");
             break;
         case FeatureName.cart:
-            emit('onClickCart');
+            emit("onClickCart");
             break;
     }
 };
@@ -194,11 +194,11 @@ const router = useRouter();
 
 const handleActiveTabSimple = (navItem: any) => {
     if (
-        navItem === t('app.title.collection') ||
-        navItem === t('app.title.type')
+        navItem === t("app.title.collection") ||
+        navItem === t("app.title.type")
     )
         return;
-    headerBelow.value.forEach((item) => {
+    headerBelow.value.forEach((item: any) => {
         if (item.title === navItem) {
             setActiveItem(item.id);
         }
@@ -206,9 +206,9 @@ const handleActiveTabSimple = (navItem: any) => {
 };
 
 const handleActiveTabComplex = (navItem: any) => {
-    headerBelow.value.forEach((item) => {
+    headerBelow.value.forEach((item: any) => {
         if (item.children.length > 0) {
-            item.children.forEach((child) => {
+            item.children.forEach((child: any) => {
                 if (child.id === navItem.id) {
                     setActiveItem(item.id);
                 }
@@ -218,27 +218,27 @@ const handleActiveTabComplex = (navItem: any) => {
 };
 
 const handleClickHeaderBelow = (navItem: any) => {
-    if (typeof navItem === 'object') {
+    if (typeof navItem === "object") {
         handleActiveTabComplex(navItem);
         router.push({
-            name: 'collection',
+            name: "collection",
             params: { id: navItem.id },
         });
         return;
     }
     handleActiveTabSimple(navItem);
     switch (navItem) {
-        case t('app.title.home'):
-            router.push({ name: 'home' });
+        case t("app.title.home"):
+            router.push({ name: "home" });
             break;
-        case t('app.title.about'):
-            router.push({ name: 'about' });
+        case t("app.title.about"):
+            router.push({ name: "about" });
             break;
-        case t('app.title.shop'):
-            router.push({ name: 'shop' });
+        case t("app.title.shop"):
+            router.push({ name: "shop" });
             break;
-        case t('app.title.contact'):
-            router.push({ name: 'contact' });
+        case t("app.title.contact"):
+            router.push({ name: "contact" });
             break;
     }
 };
@@ -248,20 +248,20 @@ const handleClickHeaderBelow = (navItem: any) => {
 const handleActiveScroll = () => {
     const currentScroll = window.pageYOffset;
     let headerTarget: HTMLElement | null =
-        document.querySelector('.header-below');
+        document.querySelector(".header-below");
     if (currentScroll >= 148 && headerTarget) {
-        headerTarget.classList.add('onscoll');
+        headerTarget.classList.add("onscoll");
     } else if (headerTarget) {
-        headerTarget.classList.remove('onscoll');
+        headerTarget.classList.remove("onscoll");
     }
 };
 
 onMounted(() => {
-    window.addEventListener('scroll', () => handleActiveScroll());
+    window.addEventListener("scroll", () => handleActiveScroll());
 });
 
 onBeforeMount(() => {
-    window.removeEventListener('scroll', () => handleActiveScroll());
+    window.removeEventListener("scroll", () => handleActiveScroll());
 });
 // #endregion
 
