@@ -8,6 +8,13 @@ import cartRouter from './cart';
 import wishlistRouter from './wishlist';
 import collectionRouter from './collection';
 import adminRouter from './admin';
+import accountAdminRouter from './account-admin';
+import productAdminRouter from './product-admin';
+import customerAdminRouter from './customer-admin';
+import collectionAdminRouter from './collection-admin';
+import orderAdminRouter from './order-admin';
+import categoryAdminRouter from './category-admin';
+import postAdminRouter from './post-admin';
 import accountRouter from './account';
 import productRouter from './product';
 import checkoutRouter from './checkout';
@@ -57,13 +64,14 @@ const router = createRouter({
                 Title: t('app.title.admin'),
             },
             children:[
-                {
-                    path: '',
-                    meta: {
-                        Title: t('app.title.admin'),
-                    },
-                    component: () => import('../views/dashboard/DashBoardView.vue'),
-                },
+                ...dashboardRouter,
+                ...postAdminRouter,
+                ...categoryAdminRouter,
+                ...orderAdminRouter,
+                ...collectionAdminRouter,
+                ...productAdminRouter,
+                ...customerAdminRouter,
+                ...accountAdminRouter
             ],
             component: () => import('../views/admin/AdminView.vue'),
         },

@@ -6,7 +6,6 @@ export function mergeObjects(object1: any, object2: any): object {
             result[prop] = object1[prop];
         }
     }
-
     for (let prop in object2) {
         if (
             object2.hasOwnProperty(prop) &&

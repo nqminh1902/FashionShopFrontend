@@ -2,7 +2,7 @@
     <transition name="fade">
         <div class="the-account-sidebar" v-show="isExpand">
             <div class="account-header d-flex-center">
-                <div class="account-title">{{ t('theAccount.title') }}</div>
+                <div class="account-title">{{ t("theAccount.title") }}</div>
                 <div class="account-close" @click="toggleExpand">
                     <Icon icon="uil:times" />
                 </div>
@@ -36,13 +36,14 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@iconify/vue';
-import { useI18n } from 'vue3-i18n';
-import { useRouter } from 'vue-router';
-import { dataAccountWithoutLogin, dataAccountWithLogin } from '@/mocks';
-import { useUserOptionStore } from '@/stores';
-import type { AccountItem } from '@/types';
-import { PopupSignin, PopupSignup } from '@/components/component';
+import { Icon } from "@iconify/vue";
+import { useI18n } from "vue3-i18n";
+import { useRouter } from "vue-router";
+import { dataAccountWithoutLogin, dataAccountWithLogin } from "@/mocks";
+import { useUserOptionStore } from "@/stores";
+import type { AccountItem } from "@/types";
+import { PopupSignin, PopupSignup } from "@/components/component";
+import { computed, ref } from "vue";
 
 // #region common
 const { t } = useI18n();
@@ -59,7 +60,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: boolean): void;
+    (e: "update:modelValue", value: boolean): void;
 }>();
 // #endregion
 
@@ -84,7 +85,7 @@ const isExpand = computed({
         return props.modelValue ?? false;
     },
     set(newValue) {
-        emit('update:modelValue', newValue);
+        emit("update:modelValue", newValue);
     },
 });
 
@@ -96,30 +97,27 @@ const toggleExpand = () => {
 // #region handle events
 const handeClickItem = (item: any) => {
     switch (item) {
-        case t('theAccount.signIn'):
+        case t("theAccount.signIn"):
             isOpenPopupSignin.value = true;
             break;
-        case t('theAccount.signUp'):
+        case t("theAccount.signUp"):
             isOpenPopupSignup.value = true;
             break;
-        case t('theAccount.account'):
-            router.push({ name: 'account' });
+        case t("theAccount.account"):
+            router.push({ name: "account" });
             break;
-        case t('theAccount.recent'):
-            router.push({ name: 'recent' });
+        case t("theAccount.recent"):
+            router.push({ name: "recent" });
             break;
-        case t('theAccount.dashboard'):
-            router.push({ name: 'dashboard' });
+        case t("theAccount.orders"):
+            router.push({ name: "orders" });
             break;
-        case t('theAccount.orders'):
-            router.push({ name: 'orders' });
+        case t("theAccount.wishlist"):
+            router.push({ name: "wishlist" });
             break;
-        case t('theAccount.wishlist'):
-            router.push({ name: 'wishlist' });
-            break;
-        case t('theAccount.logOut'):
-            console.log('Logout');
-            router.push({ name: 'home' });
+        case t("theAccount.logOut"):
+            console.log("Logout");
+            router.push({ name: "home" });
             break;
     }
     toggleExpand();

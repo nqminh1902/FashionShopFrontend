@@ -7,3 +7,4 @@ export * from './home-page';
 export * from './the-account';
 export * from './rating-start';
 export * from './orders';
+export * from './sidebar-item';

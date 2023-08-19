@@ -4,12 +4,12 @@ const t = i18n.t;
 
 const dashboardRouter = [
     {
-        path: '/dashboard',
+        path: '',
         name: 'dashboard',
         meta: {
             Title: t('app.title.dashboard'),
         },
-        component: () => import('../views/dashboard/DashBoardView.vue'),
+        component: () => import('../views/admin/dashboard/DashBoardView.vue')
     },
 ];
 
