@@ -68,7 +68,15 @@ const BaseNavigation = defineAsyncComponent(
 const BaseOrderItem = defineAsyncComponent(
     () => import('./base-order-item/BaseOrderItem.vue')
 );
-
+const BaseTable = defineAsyncComponent(
+    () => import('./base-table/BaseTable.vue')
+);
+const BaseStatus = defineAsyncComponent(
+    () => import('./base-status/BaseStatus.vue')
+);
+const BasePaging = defineAsyncComponent(
+    () => import('./base-paging/Basepaging.vue')
+);
 export {
     BaseSelectBox,
     BaseFilter,
@@ -94,4 +102,7 @@ export {
     BaseMap,
     BaseNavigation,
     BaseOrderItem,
+    BaseTable,
+    BaseStatus,
+    BasePaging
 };

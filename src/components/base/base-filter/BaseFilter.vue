@@ -18,11 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import { BaseSelectBox, BaseTextBox } from '@/components/base';
-import type { BaseFilterType } from '@/types';
-import { mergeObjects } from '@/utils';
-import type { DxSelectBox, DxTextBox } from 'devextreme-vue';
-import { useI18n } from 'vue3-i18n';
+import { BaseSelectBox, BaseTextBox } from "@/components/base";
+import type { BaseFilterType } from "@/types";
+import { mergeObjects } from "@/utils";
+import type { DxSelectBox, DxTextBox } from "devextreme-vue";
+import { ref, watch } from "vue";
+import { useI18n } from "vue3-i18n";
 
 // #region common
 const { t, getLocale } = useI18n();
@@ -32,8 +33,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'onSelectValueChanged', value: any): void;
-    (e: 'onSearchValueChanged', value: any): void;
+    (e: "onSelectValueChanged", value: any): void;
+    (e: "onSearchValueChanged", value: any): void;
 }>();
 
 const isShowTextBox = (): boolean => {
@@ -48,36 +49,36 @@ const isShowTextBox = (): boolean => {
 
 const defaultConfig = ref<BaseFilterType>({
     isShowSearchBox: true,
-    textSelectBox: t('base.filter.sortBy'),
+    textSelectBox: t("base.filter.sortBy"),
     selectBoxConfig: {
         dataSource: [
-            t('base.filter.options.relevance'),
-            t('base.filter.options.nameAZ'),
-            t('base.filter.options.nameZA'),
-            t('base.filter.options.priceLH'),
-            t('base.filter.options.priceHL'),
+            t("base.filter.options.relevance"),
+            t("base.filter.options.nameAZ"),
+            t("base.filter.options.nameZA"),
+            t("base.filter.options.priceLH"),
+            t("base.filter.options.priceHL"),
         ],
-        placeholder: t('base.general.selectValue'),
+        placeholder: t("base.general.selectValue"),
         onValueChanged: (e) => {
-            emit('onSelectValueChanged', e.value);
+            emit("onSelectValueChanged", e.value);
         },
     },
 });
 
 const searchDefaultConfig: DxTextBox = {
     width: 260,
-    placeholder: t('base.general.typeValue'),
+    placeholder: t("base.general.typeValue"),
     buttons: [
         {
-            name: 'BtnSearch',
-            location: 'before',
+            name: "BtnSearch",
+            location: "before",
             options: {
-                icon: 'search',
+                icon: "search",
             },
         },
     ],
     onValueChanged: (e) => {
-        emit('onSearchValueChanged', e.value);
+        emit("onSearchValueChanged", e.value);
     },
 };
 
@@ -101,15 +102,15 @@ watch(
         if (currentLanguage) {
             baseSelectBoxRef.value
                 ?.getInstance()
-                .option('placeholder', t('base.general.selectValue'));
+                .option("placeholder", t("base.general.selectValue"));
             baseSelectBoxRef.value
                 ?.getInstance()
-                .option('dataSource', [
-                    t('base.filter.options.relevance'),
-                    t('base.filter.options.nameAZ'),
-                    t('base.filter.options.nameZA'),
-                    t('base.filter.options.priceLH'),
-                    t('base.filter.options.priceHL'),
+                .option("dataSource", [
+                    t("base.filter.options.relevance"),
+                    t("base.filter.options.nameAZ"),
+                    t("base.filter.options.nameZA"),
+                    t("base.filter.options.priceLH"),
+                    t("base.filter.options.priceHL"),
                 ]);
         }
     }

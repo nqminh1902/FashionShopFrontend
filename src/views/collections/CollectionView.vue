@@ -22,7 +22,10 @@
             <div v-else>
                 <the-empty />
             </div>
-            <base-navigation v-if="dataProducts.length > 0" />
+            <base-navigation
+                :total-record="100"
+                v-if="dataProducts.length > 0"
+            />
         </div>
     </div>
 </template>
@@ -33,16 +36,16 @@ import {
     BaseFilter,
     BaseBreadcrumbs,
     BaseNavigation,
-} from '@/components/base';
-import { useRoute } from 'vue-router';
-import { ProductModel } from '../../models';
-import ProductApi from '@/apis/product/product-api';
-import { breadcrumbConfig } from '@/constants/views';
-import type { BaseFilterType } from '@/types';
-import { useI18n } from 'vue3-i18n';
-import { onMounted } from 'vue';
-import { translateScreen } from '@/utils';
-import { TheEmpty } from '@/components/component';
+} from "@/components/base";
+import { useRoute } from "vue-router";
+import { ProductModel } from "../../models";
+import ProductApi from "@/apis/product/product-api";
+import { breadcrumbConfig } from "@/constants/views";
+import type { BaseFilterType } from "@/types";
+import { useI18n } from "vue3-i18n";
+import { onMounted, ref, watch } from "vue";
+import { translateScreen } from "@/utils";
+import { TheEmpty } from "@/components/component";
 
 // #region common
 const dataProducts = ref<ProductModel[]>([]);

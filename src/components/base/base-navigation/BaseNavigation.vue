@@ -2,16 +2,16 @@
     <div class="base-navigation">
         <div class="navigation-left">
             <div class="total">
-                {{ t('navigation.total') }}
-                <span class="total-text">{{ navigation.total }}</span>
-                {{ t('navigation.record') }}
+                {{ t("navigation.total") }}
+                <span class="total-text">{{ totalRecord }}</span>
+                {{ t("navigation.record") }}
             </div>
         </div>
         <div class="navigation-right d-flex-center">
             <div class="record-per-page d-flex-center m-r-15">
                 <span class="m-r-4"
-                    >{{ t('navigation.numberOfRecords') }}{{ t('sign.slash')
-                    }}{{ t('navigation.page') }}</span
+                    >{{ t("navigation.numberOfRecords") }}{{ t("sign.slash")
+                    }}{{ t("navigation.page") }}</span
                 >
                 <base-select-box
                     v-model="navigation.pageSize"
@@ -19,18 +19,27 @@
                 />
             </div>
             <div class="from-to-record m-r-15">
-                {{ fromNumber }}{{ t('sign.dash') }}{{ toNumber }}
-                {{ t('navigation.record') }}
+                {{ fromNumber }}{{ t("sign.dash") }}{{ toNumber }}
+                {{ t("navigation.record") }}
             </div>
             <div class="controls d-flex-center">
                 <div
                     class="previous cpointer m-r-10"
                     @click="handleChangePage(false)"
                 >
-                    <Icon icon="ooui:next-rtl" />
+                    <Icon
+                        icon="ooui:next-rtl"
+                        :class="navigation.pageIndex == 1 && 'opacity03'"
+                    />
                 </div>
                 <div class="next cpointer" @click="handleChangePage()">
-                    <Icon icon="ooui:next-ltr" />
+                    <Icon
+                        icon="ooui:next-ltr"
+                        :class="
+                            Math.ceil(totalRecord / navigation.pageSize) <=
+                                navigation.pageIndex && 'opacity03'
+                        "
+                    />
                 </div>
             </div>
         </div>
@@ -38,47 +47,52 @@
 </template>
 
 <script setup lang="ts">
-import type { DxSelectBox } from 'devextreme-vue';
-import { BaseSelectBox } from '..';
-import { useI18n } from 'vue3-i18n';
-import type { BaseNavigationType } from '@/types';
-import { Icon } from '@iconify/vue';
+import type { DxSelectBox } from "devextreme-vue";
+import { BaseSelectBox } from "..";
+import { useI18n } from "vue3-i18n";
+import type { BaseNavigationType } from "@/types";
+import { Icon } from "@iconify/vue";
+import { computed, ref } from "vue";
 
 // #region common
 const { t } = useI18n();
 
 const emit = defineEmits<{
-    (e: 'nextPage'): void;
-    (e: 'previosPage'): void;
-    (e: 'changePageSize'): void;
+    (e: "onNavigationChange", paging: BaseNavigationType): void;
+}>();
+
+const props = defineProps<{
+    totalRecord: number;
 }>();
 
 const navigation = ref<BaseNavigationType>({
     pageIndex: 1,
-    pageSize: 10,
-    total: 20,
+    pageSize: 15,
+    isChangePageSize: false,
 });
 
-const fromNumber = ref<number>(
-    navigation.value.total === 0 ? 0 : navigation.value.pageIndex
-);
+const fromNumber = computed(() => {
+    return navigation.value.pageSize * (navigation.value.pageIndex - 1) + 1;
+});
 
-const toNumber = ref<number>(
-    navigation.value.total > navigation.value.pageSize
-        ? navigation.value.pageSize
-        : navigation.value.total
-);
+const toNumber = computed(() => {
+    return navigation.value.pageSize * navigation.value.pageIndex >
+        props.totalRecord
+        ? props.totalRecord
+        : navigation.value.pageSize * navigation.value.pageIndex;
+});
 // #endregion
 
 // #region config
 const selectBoxConfig = ref<DxSelectBox>({
-    width: 90,
-    dataSource: [10, 25, 50, 100],
+    width: 80,
+    dataSource: [15, 25, 50, 100],
     searchEnabled: false,
     onValueChanged: (e) => {
-        navigation.value.pageSize = 1;
+        navigation.value.pageIndex = 1;
         navigation.value.pageSize = e.value;
-        emit('changePageSize');
+        navigation.value.isChangePageSize = true;
+        emit("onNavigationChange", navigation.value);
     },
 });
 // #endregion
@@ -87,34 +101,19 @@ const selectBoxConfig = ref<DxSelectBox>({
 const handleChangePage = (isNextPage: boolean = true) => {
     if (isNextPage) {
         if (
-            navigation.value.pageIndex * navigation.value.pageSize + 1 <
-            navigation.value.total
+            Math.ceil(props.totalRecord / navigation.value.pageSize) >
+            navigation.value.pageIndex
         ) {
-            navigation.value.pageIndex += 1;
-            fromNumber.value += navigation.value.pageSize;
-            if (
-                toNumber.value + navigation.value.pageSize <
-                navigation.value.total
-            ) {
-                toNumber.value += navigation.value.pageSize;
-            } else {
-                toNumber.value = navigation.value.total;
-            }
+            navigation.value.pageIndex++;
+            navigation.value.isChangePageSize = false;
+            emit("onNavigationChange", navigation.value);
         }
-        emit('nextPage');
     } else {
         if (navigation.value.pageIndex > 1) {
-            navigation.value.pageIndex -= 1;
-            if (fromNumber.value - navigation.value.pageSize >= 1) {
-                fromNumber.value -= navigation.value.pageSize;
-            }
-            if (
-                toNumber.value - navigation.value.pageSize >=
-                navigation.value.pageSize
-            )
-                toNumber.value -= navigation.value.pageSize;
+            navigation.value.pageIndex--;
+            navigation.value.isChangePageSize = false;
+            emit("onNavigationChange", navigation.value);
         }
-        emit('previosPage');
     }
 };
 // #endregion
@@ -126,20 +125,18 @@ const handleChangePage = (isNextPage: boolean = true) => {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    height: 56px;
+    height: 46px;
     padding: 10px 20px;
-    margin-top: 40px;
     background-color: var(--app-color-background);
     .controls {
         .previous,
         .next {
             padding: 6px;
-            &:hover {
-                border-radius: 50%;
-                color: var(--app-color-white);
-                background-color: var(--app-color-primary);
-            }
+            cursor: pointer;
         }
+    }
+    .opacity03 {
+        opacity: 0.3;
     }
 }
 </style>

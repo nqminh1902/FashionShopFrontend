@@ -90,5 +90,17 @@ defineExpose({
     .button-border-radius {
         border-radius: 0px 4px 4px 0px;
     }
+    .dx-texteditor-container {
+        .dx-button-mode-contained {
+            border-color: transparent;
+        }
+    }
+    .dx-button-mode-contained {
+        &.dx-state-hover,
+        &.dx-state-active,
+        &.dx-state-focused {
+            background-color: var(--app-color-white);
+        }
+    }
 }
 </style>
