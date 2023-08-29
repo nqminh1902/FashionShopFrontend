@@ -4,6 +4,9 @@
             <template #status-template="{ data }">
                 <slot name="status" :data="data"></slot>
             </template>
+            <template #image-template="{ data }">
+                <slot name="image" :data="data"></slot>
+            </template>
             <template #feature-cell="{ data }">
                 <div class="feature-wrap">
                     <Icon
@@ -37,6 +40,8 @@ import { Icon } from "@iconify/vue";
 const props = defineProps<{
     config: DxDataGrid;
 }>();
+
+const emit = defineEmits(["onEdit", "onDelete"]);
 
 const defaultConfig: DxDataGrid = {
     allowColumnReordering: false,
@@ -77,9 +82,13 @@ const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
  * Thực hiện mở popup
  **  Author: Nguyễn Quang Minh(26/12/2022)
  */
-function onDelete(data: any) {}
+function onDelete(data: any) {
+    emit("onDelete", data);
+}
 
-function onEdit(data: any) {}
+function onEdit(data: any) {
+    emit("onEdit", data);
+}
 
 defineExpose({
     getInstance: () => dataGridRef.value?.instance,

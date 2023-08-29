@@ -13,11 +13,11 @@ export default class BaseApi<T> {
         this.controller = controller;
     }
 
-    getAll() {
+    getAll(): Promise<AxiosResponse<ServiceResponse>> {
         return this.baseApi.get(this.controller);
     }
 
-    getByID(id: string | number) {
+    getByID(id: string | number): Promise<AxiosResponse<ServiceResponse>> {
         return this.baseApi.get(this.controller + `/${id}`);
     }
 
@@ -27,27 +27,27 @@ export default class BaseApi<T> {
         return this.baseApi.post(this.controller + '/paging', param);
     }
 
-    insert(param: T) {
+    insert(param: T): Promise<AxiosResponse<ServiceResponse>> {
         return this.baseApi.post(this.controller, param);
     }
 
-    insertBulk(param: T[]) {
+    insertBulk(param: T[]): Promise<AxiosResponse<ServiceResponse>> {
         return this.baseApi.post(this.controller + `/bulk`, param);
     }
 
-    update(param: T) {
-        return this.baseApi.put(this.controller, param);
+    update(id:number,param: T): Promise<AxiosResponse<ServiceResponse>> {
+        return this.baseApi.put(this.controller + `/${id}`, param);
     }
 
-    updateBulk(param: T[]) {
+    updateBulk(param: T[]): Promise<AxiosResponse<ServiceResponse>> {
         return this.baseApi.post(this.controller + `/bulk`, param);
     }
 
-    delete(id: string | number) {
-        return this.baseApi.put(this.controller + `/${id}`);
+    delete(id: number): Promise<AxiosResponse<ServiceResponse>> {
+        return this.baseApi.delete(this.controller + `/${id}`);
     }
 
-    deleteBulk(param: T[]) {
+    deleteBulk(param: T[]): Promise<AxiosResponse<ServiceResponse>> {
         return this.baseApi.post(this.controller + '/batch', param);
     }
 }

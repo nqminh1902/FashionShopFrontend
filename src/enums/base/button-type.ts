@@ -4,4 +4,5 @@ export enum ButtonType {
     default = 'default',
     normal = 'normal',
     success = 'success',
+    adminNormal = "admin-normal"
 }

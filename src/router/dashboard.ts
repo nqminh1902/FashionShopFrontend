@@ -4,7 +4,7 @@ const t = i18n.t;
 
 const dashboardRouter = [
     {
-        path: '',
+        path: '/admin/dashboard',
         name: 'dashboard',
         meta: {
             Title: t('app.title.dashboard'),

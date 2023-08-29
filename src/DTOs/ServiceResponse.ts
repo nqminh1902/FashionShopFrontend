@@ -1,4 +1,5 @@
 export class ServiceResponse {
+    Success: boolean
     Code: number;
 
     Data: any;
@@ -12,6 +13,7 @@ export class ServiceResponse {
     DevMessage: string;
 
     constructor() {
+        this.Success = true
         this.Code = 0;
         this.Data = null;
         this.TotalCount = 0;

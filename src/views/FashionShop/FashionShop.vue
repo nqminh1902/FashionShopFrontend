@@ -25,7 +25,6 @@
     <the-footer />
     <popup-compare v-model="isOpenPopupCompare" />
     <the-preview-compare />
-    <base-toast ref="toastRef" :config="toastConfig" />
 </template>
 
 <script setup lang="ts">
@@ -40,33 +39,20 @@ import {
     ThePreviewCompare,
 } from "@/components/component";
 import LoadingView from "../../views/loading/LoadingView.vue";
-import { useUserOptionStore, useToastStore } from "../../stores";
+import {
+    useUserOptionStore,
+    useToastStore,
+    useCompareStore,
+} from "../../stores";
 import { PopupCompare } from "../../components/component";
-import { useCompareStore } from "../../stores";
 import type { DxToast } from "devextreme-vue";
 import { ToastType } from "../../enums";
-import { BaseToast } from "../../components/base";
 import { ref, watch } from "vue";
 
 // #region handle events
 const compareStore = useCompareStore();
 const isOpenPopupCompare = ref<boolean>(compareStore.compare.isVisible);
 useUserOptionStore().initData();
-
-const toastRef = ref();
-
-const toastConfig = ref<DxToast>({
-    type: ToastType.success,
-    visible: false,
-    message: "Success!",
-});
-
-watch(
-    () => useToastStore().isShowToast,
-    (currentValue) => {
-        toastRef.value.instance?.option("visible", currentValue);
-    }
-);
 
 const isExpandCartProps = ref<boolean>(false);
 const isExpandAccountProps = ref<boolean>(false);

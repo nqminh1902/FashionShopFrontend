@@ -22,6 +22,7 @@ import recentRouter from './recent';
 import i18n from '@/locales/i18n';
 import postRouter from './post';
 import ordersRouter from './orders';
+import productColorRouter from './product-color'
 
 const t = i18n.t;
 
@@ -63,6 +64,7 @@ const router = createRouter({
             meta: {
                 Title: t('app.title.admin'),
             },
+            redirect: { name: "dashboard" }, 
             children:[
                 ...dashboardRouter,
                 ...postAdminRouter,
@@ -71,7 +73,8 @@ const router = createRouter({
                 ...collectionAdminRouter,
                 ...productAdminRouter,
                 ...customerAdminRouter,
-                ...accountAdminRouter
+                ...accountAdminRouter,
+                ...productColorRouter
             ],
             component: () => import('../views/admin/AdminView.vue'),
         },

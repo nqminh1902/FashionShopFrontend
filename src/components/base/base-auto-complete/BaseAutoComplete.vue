@@ -9,9 +9,10 @@
 </template>
 
 <script setup lang="ts">
-import { mergeObjects } from '@/utils';
-import { DxAutocomplete } from 'devextreme-vue/autocomplete';
-import { useI18n } from 'vue3-i18n';
+import { mergeObjects } from "@/utils";
+import { DxAutocomplete } from "devextreme-vue/autocomplete";
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue3-i18n";
 
 // #region common
 const { t, getLocale } = useI18n();
@@ -21,24 +22,24 @@ const props = defineProps<{
     modelValue?: string | number | undefined;
 }>();
 
-const emit = defineEmits(['update:modelValue', 'onValueChange']);
+const emit = defineEmits(["update:modelValue", "onValueChange"]);
 
 const internalValue = computed({
     get() {
-        return props.modelValue ?? props.config.value ?? '';
+        return props.modelValue ?? props.config.value ?? "";
     },
     set(newValue) {
-        emit('update:modelValue', newValue.toString().trim());
-        emit('onValueChange', newValue.toString().trim());
+        emit("update:modelValue", newValue.toString().trim());
+        emit("onValueChange", newValue.toString().trim());
     },
 });
 
 const defaultConfig: DxAutocomplete = {
     height: 38,
-    width: '100%',
+    width: "100%",
     disabled: false,
     showClearButton: true,
-    placeholder: t('base.general.typeValue'),
+    placeholder: t("base.general.typeValue"),
 };
 
 const autoCompleteConfig: DxAutocomplete = mergeObjects(
@@ -53,8 +54,8 @@ watch(
     (currentLanguage) => {
         if (currentLanguage) {
             autoCompleteRef.value.instance?.option(
-                'placeholder',
-                t('base.general.typeValue')
+                "placeholder",
+                t("base.general.typeValue")
             );
         }
     }

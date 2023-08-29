@@ -4,7 +4,7 @@ const t = i18n.t;
 
 const collectionAdminRouter = [
     {
-        path: '/collection-admin',
+        path: '/admin/collection-admin',
         name: 'collection-admin',
         meta: {
             Title: t('app.title.collection'),

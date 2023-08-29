@@ -3,13 +3,13 @@
         <div class="bg-white w-full h-full rounded-lg">
             <div class="content-title">
                 <Icon
-                    :icon="'mdi:collection'"
+                    :icon="'ic:outline-color-lens'"
                     :color="'#2563eb'"
                     width="24"
                     height="24"
                     class="mx-6"
                 />
-                <div class="text-3xl">Bộ sưu tập sản phẩm</div>
+                <div class="text-3xl">Danh mục màu sắc sản phẩm</div>
             </div>
             <div class="toolbar">
                 <base-text-box :config="searchDefaultConfig" />
@@ -22,8 +22,12 @@
                     @on-delete="handleDelete"
                     @on-edit="handleEdit"
                 >
-                    <template #status="data">
-                        <base-status :status="data.data.data.Status" />
+                    <template #image="data">
+                        <img
+                            :href="data.data.data.ProductColorImage"
+                            :title="data.data.data.ProductColorImage"
+                            style="width: 24px; height: 24px"
+                        />
                     </template>
                 </base-table>
             </div>
@@ -47,27 +51,26 @@
                 <div class="add-category-body">
                     <div class="field">
                         <div class="lable">
-                            Tên bộ sưu tập<span style="color: red"> *</span>
+                            Tên màu sắc<span style="color: red"> *</span>
                         </div>
 
                         <base-text-box
                             :config="textBoxConfig"
-                            v-model="collection.CollectionName"
+                            v-model="productColor.ProductColorName"
                             class="mb-6"
                         />
-                        <p class="error-message" v-if="isError.CollectionName">
-                            Tên bộ sưu không được để trống
+                        <p
+                            class="error-message"
+                            v-if="isError.ProductColorName"
+                        >
+                            Tên màu sẵc không được để trống
                         </p>
                     </div>
                     <div class="field">
                         <div class="lable">
-                            Trạng thái<span style="color: red"> *</span>
+                            Ảnh màu sắc<span style="color: red"> *</span>
                         </div>
-
-                        <base-select-box
-                            v-model="collection.Status"
-                            :config="selectBoxConfig"
-                        />
+                        <base-upload-image />
                     </div>
                 </div>
             </template>
@@ -109,6 +112,7 @@ import {
     BaseButton,
     BasePopup,
     BaseSelectBox,
+    BaseUploadImage,
 } from "../../../components/base";
 import { Icon } from "@iconify/vue";
 import type {
@@ -119,8 +123,8 @@ import type {
 } from "devextreme-vue";
 import { ref } from "vue";
 import CustomStore from "devextreme/data/custom_store";
-import CollectionApi from "../../../apis/collection/collection-api";
-import { CollectionModel, PagingRequest } from "../../../models";
+import ProductColorApi from "../../../apis/product-color/product-color-api";
+import { ProductColorModel, PagingRequest } from "../../../models";
 import type { BaseNavigationType } from "@/types";
 import type DxTextBox from "devextreme-vue/text-box";
 import { ButtonStylingMode, ButtonType, ToastType } from "@/enums";
@@ -128,24 +132,24 @@ import { useToastStore } from "@/stores";
 
 const { t, getLocale, setLocale } = useI18n();
 const toastStore = useToastStore();
-const collectionApi = new CollectionApi();
+const productColorApi = new ProductColorApi();
 const filterPaging = new PagingRequest();
 const totalCount = ref<number>(0);
 const baseTableRef = ref();
 const isShowPopup = ref<boolean>(false);
 const isUpdate = ref<boolean>(false);
-const collection = ref(new CollectionModel());
+const productColor = ref(new ProductColorModel());
 const showPopupDelete = ref<boolean>(false);
 const isError = ref({
-    CollectionName: false,
+    ProductColorName: false,
 });
 const popupTitle = ref("Thêm bộ sưu tập");
 
 const dataSource = new CustomStore({
-    key: "CollectionID",
+    key: "ProductColorID",
     async load(loadOptions) {
-        filterPaging.Collums = ["CollectionName"];
-        const res = await collectionApi.getFilterPaging(filterPaging);
+        filterPaging.Collums = ["ProductColorName"];
+        const res = await productColorApi.getFilterPaging(filterPaging);
         if (res) {
             totalCount.value = res.data.Data.TotalCount;
         }
@@ -154,43 +158,25 @@ const dataSource = new CustomStore({
     loadMode: "processed",
 });
 
-const selectBoxConfig = ref<DxSelectBox>({
-    displayExpr: "name",
-    valueExpr: "id",
-    dataSource: [
-        {
-            id: 0,
-            name: "Không kích hoạt",
-        },
-        {
-            id: 1,
-            name: "Kích hoạt",
-        },
-    ],
-    searchEnabled: false,
-    onValueChanged: (e) => {},
-});
-
 const tableConfig = ref<DxDataGrid>({
     columns: [
         {
             alignment: "left",
-            caption: "Tên bộ sưu tập",
-            dataField: "CollectionName",
+            caption: "Màu sắc",
+            dataField: "ProductColorImage",
             dataType: "string",
+            cellTemplate: "imageTemplate",
             width: 200,
         },
         {
             alignment: "left",
-            caption: "Trạng thái",
-            dataField: "Status",
-            dataType: "number",
-            width: 150,
-            cellTemplate: "status-template",
+            caption: "Tên bộ sưu tập",
+            dataField: "ProductColorName",
+            dataType: "string",
         },
     ],
     dataSource: dataSource,
-    keyExpr: "CollectionID",
+    keyExpr: "ProductColorID",
     onSelectionChanged(e) {
         console.log(e);
     },
@@ -223,9 +209,9 @@ const searchDefaultConfig: DxTextBox = {
 const textBoxConfig: DxTextBox = {
     placeholder: t("base.general.typeValue"),
     onValueChanged: (e) => {
-        collection.value.CollectionName = e.value?.trim();
+        productColor.value.ProductColorImage = e.value?.trim();
         if (e.value) {
-            isError.value.CollectionName = false;
+            isError.value.ProductColorName = false;
         }
     },
 };
@@ -233,12 +219,12 @@ const textBoxConfig: DxTextBox = {
 const buttonConfig = ref<DxButton>({
     type: ButtonType.default,
     height: 36,
-    text: "Thêm bộ sưu tập",
+    text: "Thêm màu sắc",
     stylingMode: ButtonStylingMode.contained,
     icon: "plus",
     onClick(e) {
-        collection.value = new CollectionModel();
-        popupTitle.value = "Thêm bộ sưu tập";
+        productColor.value = new ProductColorModel();
+        popupTitle.value = "Thêm màu sắc";
         isShowPopup.value = true;
         isUpdate.value = false;
     },
@@ -251,8 +237,8 @@ function pagingChange(e: BaseNavigationType) {
 }
 
 function validateForm() {
-    if (!collection.value.CollectionName) {
-        isError.value.CollectionName = true;
+    if (!productColor.value.ProductColorName) {
+        isError.value.ProductColorName = true;
         return false;
     }
     return true;
@@ -273,9 +259,9 @@ async function handleSave() {
 }
 
 async function handleUpdate() {
-    const res = await collectionApi.update(
-        collection.value.CollectionID,
-        collection.value
+    const res = await productColorApi.update(
+        productColor.value.ProductColorID,
+        productColor.value
     );
     if (res?.data.Success) {
         toastStore.toggleToast(true, "Cập nhật thành công", ToastType.success);
@@ -287,7 +273,7 @@ async function handleUpdate() {
 }
 
 async function handleInsert() {
-    const res = await collectionApi.insert(collection.value);
+    const res = await productColorApi.insert(productColor.value);
     if (res?.data.Success) {
         toastStore.toggleToast(true, "Thêm mới thành công", ToastType.success);
         baseTableRef.value.getInstance().refresh();
@@ -298,7 +284,7 @@ async function handleInsert() {
 }
 
 async function handleRemove() {
-    const res = await collectionApi.delete(collection.value.CollectionID);
+    const res = await productColorApi.delete(productColor.value.ProductColorID);
     if (res?.data.Success) {
         toastStore.toggleToast(true, "Xóa thành công", ToastType.success);
         baseTableRef.value.getInstance().refresh();
@@ -309,22 +295,22 @@ async function handleRemove() {
 }
 
 function handleDelete(event: any) {
-    collection.value = event;
+    productColor.value = event;
     showPopupDelete.value = true;
 }
 
 async function handleEdit(event: any) {
     try {
-        const res: any = await collectionApi.getByID(event.CollectionID);
+        const res: any = await productColorApi.getByID(event.ProductColorID);
         if (res?.data.Success) {
-            collection.value = res?.data.Data;
-            popupTitle.value = "Sửa bộ sưu tập";
+            productColor.value = res?.data.Data;
+            popupTitle.value = "Sửa màu sắc";
             isUpdate.value = true;
             isShowPopup.value = true;
         } else {
             toastStore.toggleToast(
                 true,
-                "Lấy thông bộ sưu tập thất bại",
+                "Lấy thông màu sắc thất bại",
                 ToastType.error
             );
         }

@@ -3,13 +3,13 @@
         <div class="bg-white w-full h-full rounded-lg">
             <div class="content-title">
                 <Icon
-                    :icon="'mdi:collection'"
+                    :icon="'tabler:category'"
                     :color="'#2563eb'"
                     width="24"
                     height="24"
                     class="mx-6"
                 />
-                <div class="text-3xl">Bộ sưu tập sản phẩm</div>
+                <div class="text-3xl">Danh sách sản phẩm</div>
             </div>
             <div class="toolbar">
                 <base-text-box :config="searchDefaultConfig" />
@@ -32,46 +32,6 @@
                 @onNavigationChange="pagingChange"
             />
         </div>
-        <base-popup
-            v-if="isShowPopup"
-            :config="popupConfig"
-            :showBtnFooter="true"
-            :popupVisible="isShowPopup"
-            @close="isShowPopup = false"
-            @save="handleSave"
-        >
-            <template #body>
-                <div class="add-category-header text-3xl">
-                    {{ popupTitle }}
-                </div>
-                <div class="add-category-body">
-                    <div class="field">
-                        <div class="lable">
-                            Tên bộ sưu tập<span style="color: red"> *</span>
-                        </div>
-
-                        <base-text-box
-                            :config="textBoxConfig"
-                            v-model="collection.CollectionName"
-                            class="mb-6"
-                        />
-                        <p class="error-message" v-if="isError.CollectionName">
-                            Tên bộ sưu không được để trống
-                        </p>
-                    </div>
-                    <div class="field">
-                        <div class="lable">
-                            Trạng thái<span style="color: red"> *</span>
-                        </div>
-
-                        <base-select-box
-                            v-model="collection.Status"
-                            :config="selectBoxConfig"
-                        />
-                    </div>
-                </div>
-            </template>
-        </base-popup>
         <base-popup
             v-if="showPopupDelete"
             :config="popupConfig"
@@ -119,8 +79,8 @@ import type {
 } from "devextreme-vue";
 import { ref } from "vue";
 import CustomStore from "devextreme/data/custom_store";
-import CollectionApi from "../../../apis/collection/collection-api";
-import { CollectionModel, PagingRequest } from "../../../models";
+import ProductApi from "@/apis/product/product-api";
+import { ProductModel, PagingRequest } from "../../../models";
 import type { BaseNavigationType } from "@/types";
 import type DxTextBox from "devextreme-vue/text-box";
 import { ButtonStylingMode, ButtonType, ToastType } from "@/enums";
@@ -128,24 +88,24 @@ import { useToastStore } from "@/stores";
 
 const { t, getLocale, setLocale } = useI18n();
 const toastStore = useToastStore();
-const collectionApi = new CollectionApi();
+const productApi = new ProductApi();
 const filterPaging = new PagingRequest();
 const totalCount = ref<number>(0);
 const baseTableRef = ref();
 const isShowPopup = ref<boolean>(false);
 const isUpdate = ref<boolean>(false);
-const collection = ref(new CollectionModel());
+const product = ref(new ProductModel());
 const showPopupDelete = ref<boolean>(false);
 const isError = ref({
-    CollectionName: false,
+    Name: false,
 });
 const popupTitle = ref("Thêm bộ sưu tập");
 
 const dataSource = new CustomStore({
-    key: "CollectionID",
+    key: "ProductID",
     async load(loadOptions) {
-        filterPaging.Collums = ["CollectionName"];
-        const res = await collectionApi.getFilterPaging(filterPaging);
+        filterPaging.Collums = ["Name"];
+        const res = await productApi.getFilterPaging(filterPaging);
         if (res) {
             totalCount.value = res.data.Data.TotalCount;
         }
@@ -176,7 +136,7 @@ const tableConfig = ref<DxDataGrid>({
         {
             alignment: "left",
             caption: "Tên bộ sưu tập",
-            dataField: "CollectionName",
+            dataField: "ProductName",
             dataType: "string",
             width: 200,
         },
@@ -190,7 +150,7 @@ const tableConfig = ref<DxDataGrid>({
         },
     ],
     dataSource: dataSource,
-    keyExpr: "CollectionID",
+    keyExpr: "ProductID",
     onSelectionChanged(e) {
         console.log(e);
     },
@@ -220,16 +180,6 @@ const searchDefaultConfig: DxTextBox = {
     },
 };
 
-const textBoxConfig: DxTextBox = {
-    placeholder: t("base.general.typeValue"),
-    onValueChanged: (e) => {
-        collection.value.CollectionName = e.value?.trim();
-        if (e.value) {
-            isError.value.CollectionName = false;
-        }
-    },
-};
-
 const buttonConfig = ref<DxButton>({
     type: ButtonType.default,
     height: 36,
@@ -237,7 +187,7 @@ const buttonConfig = ref<DxButton>({
     stylingMode: ButtonStylingMode.contained,
     icon: "plus",
     onClick(e) {
-        collection.value = new CollectionModel();
+        product.value = new ProductModel();
         popupTitle.value = "Thêm bộ sưu tập";
         isShowPopup.value = true;
         isUpdate.value = false;
@@ -250,55 +200,8 @@ function pagingChange(e: BaseNavigationType) {
     baseTableRef.value.getInstance().refresh();
 }
 
-function validateForm() {
-    if (!collection.value.CollectionName) {
-        isError.value.CollectionName = true;
-        return false;
-    }
-    return true;
-}
-
-async function handleSave() {
-    if (validateForm()) {
-        try {
-            if (isUpdate.value) {
-                await handleUpdate();
-            } else {
-                await handleInsert();
-            }
-        } catch {
-            toastStore.toggleToast(true, "Thêm mới thất bại", ToastType.error);
-        }
-    }
-}
-
-async function handleUpdate() {
-    const res = await collectionApi.update(
-        collection.value.CollectionID,
-        collection.value
-    );
-    if (res?.data.Success) {
-        toastStore.toggleToast(true, "Cập nhật thành công", ToastType.success);
-        baseTableRef.value.getInstance().refresh();
-        isShowPopup.value = false;
-    } else {
-        toastStore.toggleToast(true, "Cập nhật thất bại", ToastType.error);
-    }
-}
-
-async function handleInsert() {
-    const res = await collectionApi.insert(collection.value);
-    if (res?.data.Success) {
-        toastStore.toggleToast(true, "Thêm mới thành công", ToastType.success);
-        baseTableRef.value.getInstance().refresh();
-        isShowPopup.value = false;
-    } else {
-        toastStore.toggleToast(true, "Thêm mới thất bại", ToastType.error);
-    }
-}
-
 async function handleRemove() {
-    const res = await collectionApi.delete(collection.value.CollectionID);
+    const res = await productApi.delete(product.value.ProductID);
     if (res?.data.Success) {
         toastStore.toggleToast(true, "Xóa thành công", ToastType.success);
         baseTableRef.value.getInstance().refresh();
@@ -309,29 +212,11 @@ async function handleRemove() {
 }
 
 function handleDelete(event: any) {
-    collection.value = event;
+    product.value = event;
     showPopupDelete.value = true;
 }
 
-async function handleEdit(event: any) {
-    try {
-        const res: any = await collectionApi.getByID(event.CollectionID);
-        if (res?.data.Success) {
-            collection.value = res?.data.Data;
-            popupTitle.value = "Sửa bộ sưu tập";
-            isUpdate.value = true;
-            isShowPopup.value = true;
-        } else {
-            toastStore.toggleToast(
-                true,
-                "Lấy thông bộ sưu tập thất bại",
-                ToastType.error
-            );
-        }
-    } catch (error) {
-        toastStore.toggleToast(true, "Lấy thông tin thất bại", ToastType.error);
-    }
-}
+async function handleEdit(event: any) {}
 </script>
 
 <style lang="scss" scoped>

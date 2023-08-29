@@ -32,6 +32,7 @@ export const en = {
             product: 'Product',
             checkout: 'Checkout',
             recent: 'Recent',
+            productColor: "Product Color"
         },
     },
     sign: {

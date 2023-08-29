@@ -4,7 +4,7 @@ const t = i18n.t;
 
 const orderAdminRouter = [
     {
-        path: '/order-admin',
+        path: '/admin/order-admin',
         name: 'order-admin',
         meta: {
             Title: t('app.title.orders'),

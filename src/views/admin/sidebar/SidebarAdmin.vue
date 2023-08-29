@@ -12,12 +12,12 @@
         </div>
         <div class="sidebar-list">
             <dx-scroll-view :height="'100%'">
-                <div
+                <router-link
                     class="sidebar-item cursor-pointer"
-                    :class="index == selected && 'selected'"
                     v-for="(item, index) in sidebarItems"
                     :key="index"
-                    @click="handleClicked(item, index)"
+                    :to="{ name: item.name }"
+                    @click="handleClicked(index)"
                 >
                     <Icon
                         :icon="item.icon"
@@ -27,7 +27,7 @@
                         class="mx-6"
                     />
                     <div class="sidebar-title">{{ item.title }}</div>
-                </div>
+                </router-link>
             </dx-scroll-view>
         </div>
         <div class="sidebar-footer">
@@ -54,9 +54,8 @@ const route = useRoute();
 const router = useRouter();
 const selected = ref(0);
 
-function handleClicked(item: any, index: number) {
+function handleClicked(index: number) {
     selected.value = index;
-    router.push({ name: item.name });
 }
 </script>
 <style lang="scss" scoped>
@@ -96,7 +95,7 @@ function handleClicked(item: any, index: number) {
                 background-color: #eee;
             }
         }
-        .sidebar-item.selected {
+        .sidebar-item.router-link-active {
             background-color: var(--color-admin-primary);
             color: #ffffff;
         }

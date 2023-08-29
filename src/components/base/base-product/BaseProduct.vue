@@ -196,6 +196,7 @@ import { Icon } from "@iconify/vue";
 import { useCartStore } from "@/stores";
 import { ProductModel } from "../../../models";
 import { useToastStore } from "@/stores";
+import { ref, watch } from "vue";
 
 // #region common
 const { t, getLocale } = useI18n();

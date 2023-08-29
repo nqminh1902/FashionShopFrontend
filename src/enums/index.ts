@@ -8,3 +8,4 @@ export * from './localize';
 export * from './header/feature-name';
 export * from './base/layout';
 export * from './user/unit-option';
+export * from './product-status-enum';

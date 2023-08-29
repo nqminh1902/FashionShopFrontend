@@ -3,11 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import DxButton from 'devextreme-vue/button';
-import { mergeObjects } from '../../../utils';
-import { defaultBaseButtonConfig } from '@/constants/components/base';
-import { onMounted } from 'vue';
-import { ButtonType } from '@/enums';
+import DxButton from "devextreme-vue/button";
+import { mergeObjects } from "../../../utils";
+import { defaultBaseButtonConfig } from "@/constants/components/base";
+import { onMounted, ref, watch } from "vue";
+import { ButtonType } from "@/enums";
 
 // #region common
 const props = defineProps<{
@@ -45,21 +45,21 @@ watch(
 function startLoading() {
     const button = buttonRef.value?.instance?.element();
     if (button) {
-        const btnLoading = document.createElement('div');
-        btnLoading.classList.add('btn-loading');
-        const loading = document.createElement('div');
-        loading.classList.add('loader');
+        const btnLoading = document.createElement("div");
+        btnLoading.classList.add("btn-loading");
+        const loading = document.createElement("div");
+        loading.classList.add("loader");
         btnLoading.appendChild(loading);
         button.appendChild(btnLoading);
-        button.querySelector('.dx-button-content').style.visibility = 'hidden';
+        button.querySelector(".dx-button-content").style.visibility = "hidden";
     }
 }
 
 function endLoading() {
     const button = buttonRef.value?.instance?.element();
     if (button) {
-        button.querySelector('.btn-loading').remove();
-        button.querySelector('.dx-button-content').style.visibility = 'visible';
+        button.querySelector(".btn-loading").remove();
+        button.querySelector(".dx-button-content").style.visibility = "visible";
     }
 }
 // #endregion
@@ -69,9 +69,9 @@ function stylingButton() {
     const button = buttonRef.value?.instance?.element();
 
     if (buttonConfig?.type == ButtonType.default) {
-        button.classList.add('default-btn');
+        button.classList.add("default-btn");
     } else if (buttonConfig?.type == ButtonType.normal) {
-        button.classList.add('normal-btn');
+        button.classList.add("normal-btn");
     }
 }
 // #endregion

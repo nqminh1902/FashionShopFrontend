@@ -3,7 +3,7 @@ import type DxToast from 'devextreme-vue/toast';
 
 export const defaultBaseToastConfig: DxToast = {
     type: ToastType.info,
-    visible: true,
+    visible: false,
     width: 300,
     height: 52,
     displayTime: 5000,

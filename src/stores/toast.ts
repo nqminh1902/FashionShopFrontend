@@ -1,15 +1,18 @@
+import { ToastType } from '@/enums';
 import { defineStore } from 'pinia';
-import { readonly } from 'vue';
 
-export const useToastStore = defineStore('toast', () => {
-    const isShowToast = ref<boolean>(false);
-
-    const toggleToast = (type: boolean) => {
-        isShowToast.value = type;
-    };
-
-    return {
-        isShowToast: readonly(isShowToast),
-        toggleToast,
-    };
+export const useToastStore = defineStore('cartStore', {
+    state: () => ({
+        isShowToast: false,
+        toastMessage: "",
+        ToastType: "info" 
+    }),
+    getters: {},
+    actions: {
+        toggleToast(isShow: boolean, message: string, type:ToastType){
+            this.isShowToast = isShow;
+            this.toastMessage = message
+            this.ToastType = type
+        }
+    },
 });

@@ -4,7 +4,7 @@ const t = i18n.t;
 
 const accountAdminRouter = [
     {
-        path: '/account-admin',
+        path: '/admin/account-admin',
         name: 'account-admin',
         meta: {
             Title: t('app.title.account'),

@@ -15,6 +15,11 @@ export const sidebarItems = [
         name: "category-admin"
     },
     {
+        icon: "ic:outline-color-lens",
+        title: "Màu săc",
+        name: "product-color"
+    },
+    {
         icon: "mdi:collection",
         title: "Bộ sưu tập",
         name: "collection-admin"
@@ -39,4 +44,5 @@ export const sidebarItems = [
         title: "Bài viết",
         name: "post-admin"
     },
+    
 ];

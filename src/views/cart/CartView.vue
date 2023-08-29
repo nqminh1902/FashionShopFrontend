@@ -74,7 +74,7 @@
             class="lg:max-w-screen-lg md:max-w-screen-md px-3.5 mx-auto table-footer"
         >
             <div class="total">
-                {{ t('page.cart.total')
+                {{ t("page.cart.total")
                 }}<span>{{ formatCurrency(price) }}</span>
             </div>
         </div>
@@ -103,21 +103,22 @@ import {
     BaseNumberBox,
     BaseButton,
     BaseTextBox,
-} from '@/components/base';
+} from "@/components/base";
 import {
     breadcrumbCartConfig,
     numberBoxCartConfig,
     textboxConfig,
     couponBtnConfig,
-} from '@/constants/views';
-import { formatCurrency } from '@/utils';
-import { Icon } from '@iconify/vue';
-import { DxButton } from 'devextreme-vue';
-import { ButtonType } from '@/enums';
-import { useCartStore } from '@/stores/cart';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue3-i18n';
-import { useRouter } from 'vue-router';
+} from "@/constants/views";
+import { formatCurrency } from "@/utils";
+import { Icon } from "@iconify/vue";
+import { DxButton } from "devextreme-vue";
+import { ButtonType } from "@/enums";
+import { useCartStore } from "@/stores/cart";
+import { storeToRefs } from "pinia";
+import { useI18n } from "vue3-i18n";
+import { useRouter } from "vue-router";
+import { computed, ref, watch } from "vue";
 
 // #region common
 const { t, getLocale } = useI18n();
@@ -136,16 +137,16 @@ const price = computed(() => {
 
 // #region config
 const checkoutBtnConfig = ref<DxButton>({
-    text: t('page.cart.paymentProcess'),
+    text: t("page.cart.paymentProcess"),
     height: 48,
     type: ButtonType.normal,
     onClick(e) {
-        router.push({ name: 'checkout' });
+        router.push({ name: "checkout" });
     },
 });
 
 const clearBtnConfig: DxButton = {
-    text: t('page.cart.deleteCart'),
+    text: t("page.cart.deleteCart"),
     height: 48,
     onClick(e) {
         cart.removeAllProducts();
@@ -177,13 +178,13 @@ watch(
         if (currentLanguage) {
             btnCouponRef.value
                 ?.getInstance()
-                ?.option('text', t('page.cart.coupon'));
+                ?.option("text", t("page.cart.coupon"));
             btnClearRef.value
                 ?.getInstance()
-                ?.option('text', t('page.cart.deleteCart'));
+                ?.option("text", t("page.cart.deleteCart"));
             btnCheckoutRef.value
                 ?.getInstance()
-                ?.option('text', t('page.cart.paymentProcess'));
+                ?.option("text", t("page.cart.paymentProcess"));
         }
     }
 );

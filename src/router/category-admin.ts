@@ -4,7 +4,7 @@ const t = i18n.t;
 
 const categoryAdminRouter = [
     {
-        path: '/category-admin',
+        path: '/admin/category-admin',
         name: 'category-admin',
         meta: {
             Title: t('app.title.category'),

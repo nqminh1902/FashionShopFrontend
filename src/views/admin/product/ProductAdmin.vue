@@ -1,5 +1,5 @@
 <template>
-    <div>Đây là danh sách sản phẩm</div>
+    <router-view></router-view>
 </template>
 <script lang="ts" setup></script>
 <style lang="scss"></style>

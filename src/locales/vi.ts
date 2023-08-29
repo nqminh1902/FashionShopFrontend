@@ -34,6 +34,7 @@ export const vi = {
             product: 'Sản phẩm',
             checkout: 'Thanh toán',
             recent: 'Đã xem gần đây',
+            productColor:'Màu sắc sản phẩm'
         },
     },
     sign: {

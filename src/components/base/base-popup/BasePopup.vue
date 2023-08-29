@@ -43,14 +43,15 @@
 </template>
 
 <script setup lang="ts">
-import { DxPopup } from 'devextreme-vue/popup';
-import { BaseButton } from '..';
-import { mergeObjects } from '../../../utils';
-import { DxButton } from 'devextreme-vue';
-import { defaultBasePopupConfig } from '@/constants/components/base';
-import { Icon } from '@iconify/vue';
-import { ButtonStylingMode, ButtonType } from '@/enums';
-import { useI18n } from 'vue3-i18n';
+import { DxPopup } from "devextreme-vue/popup";
+import { BaseButton } from "..";
+import { mergeObjects } from "../../../utils";
+import { DxButton } from "devextreme-vue";
+import { defaultBasePopupConfig } from "@/constants/components/base";
+import { Icon } from "@iconify/vue";
+import { ButtonStylingMode, ButtonType } from "@/enums";
+import { useI18n } from "vue3-i18n";
+import { ref } from "vue";
 
 // #region common
 const { t } = useI18n();
@@ -64,25 +65,25 @@ const props = defineProps<{
 
 const popupConfig: DxPopup = mergeObjects(defaultBasePopupConfig, props.config);
 
-const emit = defineEmits(['close', 'save']);
+const emit = defineEmits(["close", "save"]);
 // #endregion
 
 // #region config
 const saveBtn = ref<DxButton>({
-    width: 'auto',
+    width: "auto",
     height: 30,
-    text: t('base.button.save'),
+    text: t("base.button.save"),
     onClick: () => {
-        emit('save');
+        emit("save");
     },
 });
 
 const closeBtn = ref<DxButton>({
-    width: 'auto',
+    width: "auto",
     height: 30,
     stylingMode: ButtonStylingMode.contained,
     type: ButtonType.normal,
-    text: t('base.button.cancel'),
+    text: t("base.button.cancel"),
     onClick: () => {
         handleClosePopup();
     },
@@ -90,7 +91,7 @@ const closeBtn = ref<DxButton>({
 // #endregion
 
 function handleClosePopup() {
-    emit('close');
+    emit("close");
 }
 </script>
 

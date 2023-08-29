@@ -4,7 +4,7 @@ const t = i18n.t;
 
 const postAdminRouter = [
     {
-        path: '/post-admin',
+        path: '/admin/post-admin',
         name: 'post-admin',
         meta: {
             Title: t('app.title.post'),
