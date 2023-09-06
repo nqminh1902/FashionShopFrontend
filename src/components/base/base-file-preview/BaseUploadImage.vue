@@ -103,7 +103,7 @@ function handleUploadFile(error: any, file: any) {
         const image = new ProductImageModel();
         image.ImageID = resposeImage.fileId;
         image.ImageUrl = resposeImage.url;
-        image.ImageUrl = resposeImage.thumbnailUrl;
+        image.ImageThumbnail = resposeImage.thumbnailUrl;
         image.PathName = resposeImage.name;
 
         emit("onUpload", image)

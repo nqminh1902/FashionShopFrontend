@@ -31,13 +31,15 @@ const router = createRouter({
     routes: [
         {
             path: '',
-            name : 'fashionShop',
+            name: 'fashionShop',
             meta: {
                 Title: t('app.title.home'),
             },
-            children:[
+            redirect: { name: 'home' },
+            children: [
                 {
-                    path: '',
+                    path: '/',
+                    name: "home",
                     meta: {
                         Title: t('app.title.home'),
                     },
@@ -64,8 +66,8 @@ const router = createRouter({
             meta: {
                 Title: t('app.title.admin'),
             },
-            redirect: { name: "dashboard" }, 
-            children:[
+            redirect: { name: "dashboard" },
+            children: [
                 ...dashboardRouter,
                 ...postAdminRouter,
                 ...categoryAdminRouter,

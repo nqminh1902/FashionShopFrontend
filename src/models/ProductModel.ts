@@ -1,7 +1,8 @@
 import type { ProductStatusEnum } from "@/enums";
-import { BaseModel } from ".";
+import { BaseModel, ProductImageModel } from ".";
 import type { ProductSizeModel } from "./ProductSizes";
 import type { ProductColorModel } from "./ProductColors";
+import type { ProductVariantModel } from "./ProductVariants";
 
 export class ProductModel extends BaseModel {
     ProductID: number;
@@ -21,8 +22,8 @@ export class ProductModel extends BaseModel {
     Images: string;
     ProductColors: ProductColorModel[];
     ProductSizes: ProductSizeModel[];
-    ProductImages: any;
-    ProductVariants: any;
+    ProductImages: ProductImageModel[];
+    ProductVariants: ProductVariantModel[];
     ProductStatus: ProductStatusEnum;
 
     constructor() {
@@ -44,5 +45,7 @@ export class ProductModel extends BaseModel {
         this.ProductStatus = 1;
         this.ProductSizes = []
         this.ProductColors = []
+        this.ProductImages = []
+        this.ProductVariants = []
     }
 }

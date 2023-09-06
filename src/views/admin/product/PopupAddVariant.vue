@@ -40,7 +40,7 @@ import {
     BaseSelectBox,
     BaseTagBox
 } from "../../../components/base";
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import CustomStore from 'devextreme/data/custom_store';
 import ProductColorApi from '@/apis/product-color/product-color-api';
 import ProductSizeApi from '@/apis/product-size/product-size-api'
@@ -66,7 +66,10 @@ const dataSourceColor = new CustomStore({
     loadMode: "raw",
 })
 
+const colorValues = [...new Set(props.productVariant.map(variant => variant.ProductColorID))]
+const sizeValues = [...new Set(props.productVariant.map(variant => variant.ProductSizeID))]
 const colorConfig = ref<DxTagBox>({
+    value: colorValues,
     width: '100%',
     placeholder: 'Chọn bộ màu sắc',
     valueExpr: 'ProductColorID',
@@ -83,11 +86,15 @@ const dataSourceSize = new CustomStore({
         const res = await productSizeApi.getAll();
         return res.data.Data.Data || [];
     },
+    async byKey(key) {
+        console.log(key);
+    },
     loadMode: "raw",
 })
 
 const sizeConfig = ref<DxTagBox>({
     width: '100%',
+    value: sizeValues,
     placeholder: 'Chọn bộ sưu tập',
     valueExpr: 'ProductSizeID',
     displayExpr: 'ProductSizeName',
@@ -121,8 +128,6 @@ function handleSave(){
             listVariant.push(variant)
         })
     })
-    debugger
-    
     emit("onSave", listVariant)
 }
 

@@ -2,18 +2,21 @@
     <div id="category-admin" class="w-full h-full px-6 pt-6 pb-3">
         <div class="bg-white w-full h-full rounded-lg">
             <div class="content-title">
-                <Icon
-                    :icon="'majesticons:arrow-left'"
-                    width="24"
-                    height="24"
-                    class="mx-6 cursor-pointer"
-                    @click="backPage"
-                />
-                <div class="text-3xl">Thêm sản phẩm</div>
+                <div class="flex items-center">
+                    <Icon
+                        :icon="'majesticons:arrow-left'"
+                        width="24"
+                        height="24"
+                        class="mr-6 cursor-pointer"
+                        @click="backPage"
+                    />
+                    <div class="text-3xl">Thêm sản phẩm</div>
+                </div>
+                <base-button :config="buttonAddConfig" />
             </div>
             <div class="product-form">
                 <dx-scroll-view :height="'100%'">
-                    <div class="flex">
+                    <div class="flex ">
                         <div class="flex-1 pr-4">
                             <div class="field">
                                 <div class="lable">
@@ -22,6 +25,7 @@
                                 <base-text-box
                                     :config="codeConfig"
                                     class="mb-6"
+                                    v-model="product.ProductCode"
                                 />
                             </div>
                             <div class="field">
@@ -31,6 +35,7 @@
                                 <base-text-box
                                     :config="nameConfig"
                                     class="mb-6"
+                                    v-model="product.ProductName"
                                 />
                             </div>
                             <div class="field">
@@ -40,6 +45,7 @@
                                 <base-number-box 
                                     :config="priceConfig"
                                     class="mb-6" 
+                                    v-model="product.ProductPrice"
                                 />
                             </div>
                             <div class="field">
@@ -49,6 +55,7 @@
                                 <base-text-box
                                     :config="materialConfig"
                                     class="mb-6"
+                                    v-model="product.Material"
                                 />
                             </div>
                             <div class="field">
@@ -69,13 +76,13 @@
                                 <div class="lable">
                                     Hình ảnh sản phẩm<span style="color: red"> *</span>
                                 </div>
-                                <base-upload-image :list-image="imageColor" :allow-multiple="true" @on-upload="handleUploadFile" @on-delete="handleDeleteFile"/>
+                                <base-upload-image :list-image="productImages" :allow-multiple="true" @on-upload="handleUploadFile" @on-delete="handleDeleteFile"/>
                             </div>
                             <div class="field">
                                 <div class="lable">
                                     Mô tả nhanh<span style="color: red"> *</span>
                                 </div>
-                                <base-text-area :config="textAreaConfig" />
+                                <base-text-area :config="textAreaConfig" v-model="product.QuickDescription"/>
                             </div>
                             <div class="field">
                                 <div class="lable">
@@ -147,7 +154,7 @@
                 </dx-scroll-view>
             </div>    
         </div>
-        <popup-add-variant v-if="isShowPopup" :visible="isShowPopup" :product-variant="listProductVariant" @on-close="isShowPopup = false" @on-save="handleSaveVariant"/>
+        <popup-add-variant v-if="isShowPopup" :visible="isShowPopup" :product-variant="product.ProductVariants" @on-close="isShowPopup = false" @on-save="handleSaveVariant"/>
     </div>
 </template>
 <script lang="ts" setup>
@@ -182,6 +189,7 @@ import {
 } from 'devextreme-vue/html-editor';
 import { ButtonStylingMode, ButtonType } from "@/enums";
 import type { ProductVariantModel } from "@/models/ProductVariants";
+import { log } from "console";
 const route = useRoute()
 const router = useRouter()
 const categoryApi = new CategoryApi();
@@ -223,7 +231,10 @@ const categoryConfig = ref<DxSelectBox>({
     displayExpr: 'CategoryName',
     noDataText: 'Không có dữ liệu',
     dataSource: dataSourceCategory,
-    onSelectionChanged(e: any) {
+    onValueChanged(e: any) {
+        if(e){
+            product.value.CategoryID = e.value
+        }
     },
 });
 
@@ -237,6 +248,17 @@ const buttonConfig = ref<DxButton>({
         isShowPopup.value = true
         console.log(product.value.ProductVariants);
         
+    },
+});
+
+const buttonAddConfig = ref<DxButton>({
+    type: ButtonType.default,
+    height: 36,
+    text: "Thêm sản phẩm",
+    stylingMode: ButtonStylingMode.contained,
+    icon: "plus",
+    onClick(e) {
+        handleSaveProduct()
     },
 });
 
@@ -279,8 +301,9 @@ const htmlEditerConfig = ref<DxHtmlEditor>({
     activeStateEnabled: true,
     hoverStateEnabled: true,
     onValueChanged(e) {
-        console.log(e);
-        
+        if(e){
+            product.value.Description = e.value
+        }
     },
 })
 
@@ -300,7 +323,10 @@ const collectionConfig = ref<DxSelectBox>({
     displayExpr: 'CollectionName',
     noDataText: 'Không có dữ liệu',
     dataSource: dataSourceCollection,
-    onSelectionChanged(e: any) {
+    onValueChanged(e: any) {
+        if(e){
+            product.value.CollectionID = e.value
+        }
     },
 });
 
@@ -325,7 +351,11 @@ const statusConfig = ref<DxSelectBox>({
         },
     ],
     searchEnabled: false,
-    onValueChanged: (e) => {},
+    onValueChanged: (e) => {
+        if(e){
+            product.value.ProductStatus = e.value
+        }
+    },
 });
 
 const textAreaConfig: DxTextArea = {
@@ -338,14 +368,14 @@ function backPage(){
     router.go(-1)
 }
 
-const imageColor = ref<ProductImageModel[]>([])
+const productImages = ref<ProductImageModel[]>([])
 
 function handleUploadFile(image: ProductImageModel){
-    imageColor.value.push(image)
+    productImages.value.push(image)
 }
 
 function handleDeleteFile(image: ProductImageModel[]){
-    imageColor.value = image
+    productImages.value = image
 }
 
 function handleSaveVariant(variants: ProductVariantModel[]){
@@ -353,13 +383,30 @@ function handleSaveVariant(variants: ProductVariantModel[]){
     product.value.ProductVariants = variants
     tableRef.value.getInstance().option("dataSource", product.value.ProductVariants)
 }
+
+function handleDataBeforeSave(){
+    if(productImages.value?.length > 0){
+        product.value.ProductImages = productImages.value
+    }
+    if(listProductVariant.value?.length > 0){
+        product.value.ProductVariants = listProductVariant.value
+    }
+}
+
+function handleSaveProduct(){
+    handleDataBeforeSave()
+    console.log(product.value);
+    
+}
 </script>
 <style lang="scss" scoped>
 .content-title {
     display: flex;
+    justify-content: space-between;
     width: 100%;
-    height: 48px;
+    height: 56px;
     align-items: center;
+    padding: 0 16px;
     line-height: 1.25;
 }
 .product-form{
