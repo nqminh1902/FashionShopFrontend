@@ -80,6 +80,10 @@ const BasePaging = defineAsyncComponent(
 const BaseUploadImage = defineAsyncComponent(
     () => import('./base-file-preview/BaseUploadImage.vue')
 );
+
+const BaseTagBox = defineAsyncComponent(
+    () => import('./base-tagbox/BaseTagBox.vue')
+);
 export {
     BaseSelectBox,
     BaseFilter,
@@ -108,5 +112,6 @@ export {
     BaseTable,
     BaseStatus,
     BasePaging,
-    BaseUploadImage
+    BaseUploadImage,
+    BaseTagBox
 };

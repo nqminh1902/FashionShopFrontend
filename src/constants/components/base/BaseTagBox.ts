@@ -1,20 +1,21 @@
-import type DxSelectBox from 'devextreme-vue/select-box';
+
 import i18n from '@/locales/i18n';
+import DxTagBox from 'devextreme-vue/tag-box';
 
 const t = i18n.t;
 
-export const defaultBaseSelectBoxConfig: DxSelectBox = {
+export const defaultBaseTagBoxConfig: DxTagBox = {
     width: 220,
     height: 40,
     disabled: false,
     readOnly: false,
     searchEnabled: true,
-    showClearButton: false,
     focusStateEnabled: true,
     hoverStateEnabled: true,
-    searchMode: 'contains',
+    searchMode: "contains",
     placeholder: t('base.general.selectValue'),
+    dropDownButtonTemplate: 'iconTemplate',
     elementAttr: {
-        class: 'base-select-box',
+        class: 'base-tag-box',
     },
 };

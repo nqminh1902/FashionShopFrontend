@@ -356,7 +356,7 @@ import { Icon } from '@iconify/vue';
 import { useI18n } from 'vue3-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import type { DxButton, DxNumberBox } from 'devextreme-vue';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useCartStore, useRecentStore } from '@/stores';
 import { ProductModel } from '../../models';
 

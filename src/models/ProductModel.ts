@@ -16,7 +16,6 @@ export class ProductModel extends BaseModel {
     Sale: number;
     DiscountPercent: number;
     TotalQuantity: number;
-    Summary?: string;
     Material?: string;
     QuickDescription?: string;
     Images: string;
@@ -36,7 +35,6 @@ export class ProductModel extends BaseModel {
         this.Sale = 0;
         this.DiscountPercent = 0;
         this.TotalQuantity = 0;
-        this.Summary = "";
         this.CollectionID = 0;
         this.CollectionName = "";
         this.CategoryID = 0;

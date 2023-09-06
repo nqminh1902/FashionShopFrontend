@@ -14,3 +14,4 @@ export * from './BaseProductDetail';
 export * from './BaseRadioGroup';
 export * from './BaseBreadcrumb';
 export * from './BaseMapConfig';
+export * from './BaseTagBox'

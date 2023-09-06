@@ -8,7 +8,7 @@
                 <slot name="image" :data="data"></slot>
             </template>
             <template #feature-cell="{ data }">
-                <div class="feature-wrap">
+                <div class="feature-wrap" v-if="isShowCustomButton">
                     <Icon
                         :icon="'material-symbols:edit-outline'"
                         :color="'#2563eb'"
@@ -37,9 +37,12 @@ import { computed, ref } from "vue";
 import { mergeObjects } from "../../../utils";
 import { Icon } from "@iconify/vue";
 // #region common
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     config: DxDataGrid;
-}>();
+    isShowCustomButton?: boolean
+}>(), {
+    isShowCustomButton: true
+});
 
 const emit = defineEmits(["onEdit", "onDelete"]);
 
@@ -97,7 +100,7 @@ defineExpose({
 <style lang="scss">
 .base-table {
     width: 100%;
-    height: 100%;
+    height: 100% ;
     .dx-row.dx-header-row {
         background-color: #eee;
         font-size: 14px;
@@ -109,6 +112,7 @@ defineExpose({
         align-items: center;
         position: absolute;
         right: 4px;
+
         min-width: 30px;
     }
     .dx-row.dx-row-lines.dx-state-hover {

@@ -1,39 +1,55 @@
 <template>
-    <dx-select-box
-        ref="dxSelectBoxRef"
+    <dx-tag-box
+        ref="dxTagBoxRef"
         v-model="internalValue"
-        v-bind="selectboxConfig"
+        v-bind="tagboxConfig"
     >
-        <template #iconTemplate>
-            <Icon icon="fa6-solid:chevron-down" />
-        </template>
-    </dx-select-box>
+    </dx-tag-box>
 </template>
 
 <script setup lang="ts">
-import DxSelectBox from 'devextreme-vue/select-box';
 import { mergeObjects } from '@/utils';
-import { defaultBaseSelectBoxConfig } from '@/constants/components/base';
+import { defaultBaseTagBoxConfig } from '@/constants/components/base';
 import { Icon } from '@iconify/vue';
 import { computed, ref } from 'vue';
-
+import DxTagBox from 'devextreme-vue/tag-box';
+import i18n from '@/locales/i18n';
+const t = i18n.t;
 // #region common
 const props = defineProps<{
-    config: DxSelectBox;
+    config: DxTagBox;
     modelValue?: any;
 }>();
 
-const defaultConfig = ref<DxSelectBox>({
-    ...defaultBaseSelectBoxConfig,
-});
+const defaultConfig = ref<DxTagBox>({
+    width: '100%',
+    height: 40,
+    disabled: false,
+    readOnly: false,
+    searchEnabled: true,
+    focusStateEnabled: true,
+    hoverStateEnabled: true,
+    searchMode: "contains",
+    multiline: false,
+    placeholder: t('base.general.selectValue'),
+    dropDownButtonTemplate: 'iconTemplate',
+    elementAttr: {
+        class: 'base-tag-box',
+    },
+    onSelectionChanged(e) {
+        handleValueChange(e)
+        
+    },
+})
 
-const selectboxConfig: DxSelectBox = mergeObjects(
+const tagboxConfig: DxTagBox = mergeObjects(
     defaultConfig.value || {},
     props.config
 );
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: any): void;
+    (e: 'onValueChange', value: any[]): void;
 }>();
 
 const internalValue = computed({
@@ -44,12 +60,30 @@ const internalValue = computed({
         emit('update:modelValue', newValue);
     },
 });
+
+let values: any[] = []
+let isFistMouted = true
+function handleValueChange(e:any){
+    if(isFistMouted){
+        isFistMouted = false
+        return
+    }
+    if(e.addedItems.length > 0){
+        values.push(...e.addedItems)
+    }else if(e.removedItems.length > 0){
+        e.removedItems.forEach((item: any) => {
+            values = values.filter((value: any) => {
+             return value[`${tagboxConfig?.valueExpr ?? ''}`] != item[`${tagboxConfig?.valueExpr ?? ''}`]})
+        });
+    }
+    emit('onValueChange', values)
+}
 // #endregion
 
-const dxSelectBoxRef = ref();
+const dxTagBoxRef = ref();
 
 defineExpose({
-    getInstance: () => dxSelectBoxRef.value?.instance,
+    getInstance: () => dxTagBoxRef.value?.instance,
 });
 </script>
 

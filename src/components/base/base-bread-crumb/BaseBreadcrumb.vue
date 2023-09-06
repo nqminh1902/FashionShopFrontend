@@ -31,6 +31,7 @@ import { RouterLink } from 'vue-router';
 import type { BaseBreadcrumbType } from '@/types';
 import { mergeObjects } from '@/utils';
 import { defaultBreadcrumbConfig } from '@/constants/components/base';
+import { ref, watch } from 'vue';
 
 // #region common
 const { t } = useI18n();

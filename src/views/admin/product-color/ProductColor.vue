@@ -23,11 +23,13 @@
                     @on-edit="handleEdit"
                 >
                     <template #image="data">
-                        <img
-                            :href="data.data.data.ProductColorImage"
-                            :title="data.data.data.ProductColorImage"
-                            style="width: 24px; height: 24px"
-                        />
+                        <div class="color-image">
+                            <img
+                                :src="data.data.data.ProductColorImage"
+                                :title="data.data.data.ProductColorName"
+                                style="width: 100%; height: 100%; border: 1px solid; object-fit: cover"
+                            />
+                        </div>
                     </template>
                 </base-table>
             </div>
@@ -70,7 +72,13 @@
                         <div class="lable">
                             Ảnh màu sắc<span style="color: red"> *</span>
                         </div>
-                        <base-upload-image />
+                        <base-upload-image :list-image="imageColor" @on-upload="handleUploadFile" @on-delete="handleDeleteFile"/>
+                        <p
+                            class="error-message"
+                            v-if="isError.ProductColorImage"
+                        >
+                            Ảnh màu sẵc không được để trống
+                        </p>
                     </div>
                 </div>
             </template>
@@ -78,8 +86,8 @@
         <base-popup
             v-if="showPopupDelete"
             :config="popupConfig"
-            :showBtnFooter="true"
             :popupVisible="showPopupDelete"
+            :showBtnFooter="true"
             @close="showPopupDelete = false"
             @save="handleRemove"
         >
@@ -124,7 +132,7 @@ import type {
 import { ref } from "vue";
 import CustomStore from "devextreme/data/custom_store";
 import ProductColorApi from "../../../apis/product-color/product-color-api";
-import { ProductColorModel, PagingRequest } from "../../../models";
+import { ProductColorModel, PagingRequest, ProductImageModel } from "../../../models";
 import type { BaseNavigationType } from "@/types";
 import type DxTextBox from "devextreme-vue/text-box";
 import { ButtonStylingMode, ButtonType, ToastType } from "@/enums";
@@ -142,6 +150,7 @@ const productColor = ref(new ProductColorModel());
 const showPopupDelete = ref<boolean>(false);
 const isError = ref({
     ProductColorName: false,
+    ProductColorImage: false
 });
 const popupTitle = ref("Thêm bộ sưu tập");
 
@@ -165,7 +174,7 @@ const tableConfig = ref<DxDataGrid>({
             caption: "Màu sắc",
             dataField: "ProductColorImage",
             dataType: "string",
-            cellTemplate: "imageTemplate",
+            cellTemplate: "image-template",
             width: 200,
         },
         {
@@ -209,7 +218,7 @@ const searchDefaultConfig: DxTextBox = {
 const textBoxConfig: DxTextBox = {
     placeholder: t("base.general.typeValue"),
     onValueChanged: (e) => {
-        productColor.value.ProductColorImage = e.value?.trim();
+        productColor.value.ProductColorName = e.value?.trim();
         if (e.value) {
             isError.value.ProductColorName = false;
         }
@@ -226,6 +235,7 @@ const buttonConfig = ref<DxButton>({
         productColor.value = new ProductColorModel();
         popupTitle.value = "Thêm màu sắc";
         isShowPopup.value = true;
+        imageColor.value = []
         isUpdate.value = false;
     },
 });
@@ -239,6 +249,10 @@ function pagingChange(e: BaseNavigationType) {
 function validateForm() {
     if (!productColor.value.ProductColorName) {
         isError.value.ProductColorName = true;
+        return false;
+    }
+    if (!productColor.value.ProductColorImage) {
+        isError.value.ProductColorImage = true;
         return false;
     }
     return true;
@@ -304,6 +318,9 @@ async function handleEdit(event: any) {
         const res: any = await productColorApi.getByID(event.ProductColorID);
         if (res?.data.Success) {
             productColor.value = res?.data.Data;
+            const productImageColor = new ProductImageModel()
+            productImageColor.ImageUrl = productColor.value.ProductColorImage
+            imageColor.value = [productImageColor]
             popupTitle.value = "Sửa màu sắc";
             isUpdate.value = true;
             isShowPopup.value = true;
@@ -317,6 +334,18 @@ async function handleEdit(event: any) {
     } catch (error) {
         toastStore.toggleToast(true, "Lấy thông tin thất bại", ToastType.error);
     }
+}
+
+const imageColor = ref<ProductImageModel[]>([])
+
+function handleUploadFile(image: ProductImageModel){
+    productColor.value.ProductColorImage = image.ImageUrl
+    imageColor.value.push(image)
+}
+
+function handleDeleteFile(image: ProductImageModel[]){
+    imageColor.value = image
+    
 }
 </script>
 
@@ -362,5 +391,9 @@ async function handleEdit(event: any) {
 }
 .lable {
     margin-bottom: 8px;
+}
+.color-image{
+    width: 26px;
+    height: 26px;
 }
 </style>

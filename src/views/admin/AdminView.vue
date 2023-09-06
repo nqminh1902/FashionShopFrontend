@@ -37,6 +37,7 @@ import SidebarAdmin from "./sidebar/SidebarAdmin.vue";
 }
 .right-admin {
     flex: 1;
+    width: calc(100% - 230px);
     height: 100vh;
     .header-admin {
         width: 100%;

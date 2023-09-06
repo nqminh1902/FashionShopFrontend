@@ -15,7 +15,7 @@
                 <base-text-box :config="searchDefaultConfig" />
                 <base-button :config="buttonConfig" />
             </div>
-            <div class="grid">
+            <div class="grid-table">
                 <base-table
                     :config="tableConfig"
                     ref="baseTableRef"
@@ -24,6 +24,15 @@
                 >
                     <template #status="data">
                         <base-status :status="data.data.data.Status" />
+                    </template>
+                    <template #image="data">
+                        <div class="color-image">
+                            <img
+                                :src="`${data.data.data.Images.split(';')[0]}`"
+                                :title="data.data.data.ProductName"
+                                style="width: 100%; height: 100%; border: 1px solid; object-fit: cover"
+                            />
+                        </div>
                     </template>
                 </base-table>
             </div>
@@ -85,6 +94,7 @@ import type { BaseNavigationType } from "@/types";
 import type DxTextBox from "devextreme-vue/text-box";
 import { ButtonStylingMode, ButtonType, ToastType } from "@/enums";
 import { useToastStore } from "@/stores";
+import { useRoute, useRouter } from "vue-router";
 
 const { t, getLocale, setLocale } = useI18n();
 const toastStore = useToastStore();
@@ -92,14 +102,10 @@ const productApi = new ProductApi();
 const filterPaging = new PagingRequest();
 const totalCount = ref<number>(0);
 const baseTableRef = ref();
-const isShowPopup = ref<boolean>(false);
-const isUpdate = ref<boolean>(false);
 const product = ref(new ProductModel());
 const showPopupDelete = ref<boolean>(false);
-const isError = ref({
-    Name: false,
-});
-const popupTitle = ref("Thêm bộ sưu tập");
+const route = useRoute()
+const router = useRouter()
 
 const dataSource = new CustomStore({
     key: "ProductID",
@@ -135,15 +141,72 @@ const tableConfig = ref<DxDataGrid>({
     columns: [
         {
             alignment: "left",
-            caption: "Tên bộ sưu tập",
+            caption: "Ảnh sản phẩm",
+            dataField: "Images",
+            dataType: "string",
+            width: 200,
+            cellTemplate: "image-template",
+        },
+        {
+            alignment: "left",
+            caption: "Tên sản phẩm",
             dataField: "ProductName",
             dataType: "string",
             width: 200,
         },
         {
             alignment: "left",
+            caption: "Mô tả",
+            dataField: "Description",
+            dataType: "string",
+            width: 200,
+        },
+        {
+            alignment: "left",
+            caption: "Giá sản phẩm",
+            dataField: "ProductPrice",
+            dataType: "number",
+            width: 200,
+        },
+        {
+            alignment: "left",
+            caption: "Tên bộ sưu tập",
+            dataField: "CollectionName",
+            dataType: "string",
+            width: 200,
+        },
+        {
+            alignment: "left",
+            caption: "Tên danh mục",
+            dataField: "Categoryname",
+            dataType: "string",
+            width: 200,
+        },
+        {
+            alignment: "left",
+            caption: "Tổng sản phẩm",
+            dataField: "TotalQuantity",
+            dataType: "string",
+            width: 200,
+        },
+        {
+            alignment: "left",
+            caption: "Chât liệu",
+            dataField: "Material",
+            dataType: "string",
+            width: 200,
+        },
+        {
+            alignment: "left",
+            caption: "Mô tả nhanh",
+            dataField: "QuickDescription",
+            dataType: "string",
+            width: 200,
+        },
+        {
+            alignment: "left",
             caption: "Trạng thái",
-            dataField: "Status",
+            dataField: "ProductStatus",
             dataType: "number",
             width: 150,
             cellTemplate: "status-template",
@@ -187,10 +250,7 @@ const buttonConfig = ref<DxButton>({
     stylingMode: ButtonStylingMode.contained,
     icon: "plus",
     onClick(e) {
-        product.value = new ProductModel();
-        popupTitle.value = "Thêm bộ sưu tập";
-        isShowPopup.value = true;
-        isUpdate.value = false;
+        router.push({name: 'add-product-admin', params: {id: 0}})
     },
 });
 
@@ -216,7 +276,9 @@ function handleDelete(event: any) {
     showPopupDelete.value = true;
 }
 
-async function handleEdit(event: any) {}
+function handleEdit(event: any) {
+    router.push({name: "add-product-admin", params: {id: event.ProductID}})
+}
 </script>
 
 <style lang="scss" scoped>
@@ -236,7 +298,7 @@ async function handleEdit(event: any) {}
         padding: 0 16px;
         justify-content: space-between;
     }
-    .grid {
+    .grid-table {
         width: 100%;
         padding: 0 16px;
         height: calc(100% - 48px - 48px - 46px);
@@ -261,5 +323,9 @@ async function handleEdit(event: any) {}
 }
 .lable {
     margin-bottom: 8px;
+}
+.color-image{
+    width: 26px;
+    height: 26px;
 }
 </style>
