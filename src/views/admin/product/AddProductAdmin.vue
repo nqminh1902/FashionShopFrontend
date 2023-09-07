@@ -62,13 +62,13 @@
                                 <div class="lable">
                                     Bộ sưu tập sản phẩm<span style="color: red"> *</span>
                                 </div>
-                                <base-select-box :config="collectionConfig" />
+                                <base-select-box :config="collectionConfig" v-model:model-value="product.CollectionID"/>
                             </div>
                             <div class="field">
                                 <div class="lable">
                                     Danh mục sản phẩm<span style="color: red"> *</span>
                                 </div>
-                                <base-select-box :config="categoryConfig" />
+                                <base-select-box :config="categoryConfig" v-model:model-value="product.CategoryID"/>
                             </div>
                         </div>
                         <div class="flex-1 pl-4">
@@ -88,7 +88,7 @@
                                 <div class="lable">
                                     Trạng thái<span style="color: red"> *</span>
                                 </div>
-                                <base-select-box :config="statusConfig" />
+                                <base-select-box :config="statusConfig" v-model:model-value="product.ProductStatus"/>
                             </div>
                             <div class="field">
                                 <div class="lable">
@@ -214,30 +214,6 @@ const sizeValues = ['8pt', '10pt', '12pt', '14pt', '18pt', '24pt', '36pt']
 const fontValues = ['Arial', 'Georgia', 'Tahoma', 'Times New Roman', 'Verdana']
 const headerValues = [false, 1, 2, 3, 4, 5]
 
-const dataSourceCategory = new CustomStore({
-    key: "CategoryID",
-    async load(loadOptions) {
-        const res = await categoryApi.getAll();
-        return res.data.Data.Data || [];
-    },
-    loadMode: "raw",
-})
-
-
-const categoryConfig = ref<DxSelectBox>({
-    width: '100%',
-    placeholder: 'Chọn trạng thái',
-    valueExpr: 'CategoryID',
-    displayExpr: 'CategoryName',
-    noDataText: 'Không có dữ liệu',
-    dataSource: dataSourceCategory,
-    onValueChanged(e: any) {
-        if(e){
-            product.value.CategoryID = e.value
-        }
-    },
-});
-
 const buttonConfig = ref<DxButton>({
     type: ButtonType.default,
     height: 36,
@@ -307,11 +283,43 @@ const htmlEditerConfig = ref<DxHtmlEditor>({
     },
 })
 
+const dataSourceCategory = new CustomStore({
+    key: "CategoryID",
+    async load(loadOptions) {
+        const res = await categoryApi.getAll();
+        return res.data.Data || [];
+    },
+    async byKey(key) {
+        const res = await categoryApi.getAll();
+        return res.data.Data || [];
+    },
+    loadMode: "raw",
+})
+
+
+const categoryConfig = ref<DxSelectBox>({
+    width: '100%',
+    placeholder: 'Chọn danh mục',
+    valueExpr: 'CategoryID',
+    displayExpr: 'CategoryName',
+    noDataText: 'Không có dữ liệu',
+    dataSource: dataSourceCategory,
+    onValueChanged(e: any) {
+        if(e){
+            product.value.CategoryID = e.value
+        }
+    },
+});
+
 const dataSourceCollection = new CustomStore({
     key: "CollectionID",
     async load(loadOptions) {
         const res = await collectionApi.getAll();
-        return res.data.Data.Data || [];
+        return res.data.Data || [];
+    },
+    async byKey(key) {
+        const res = await collectionApi.getAll();
+        return res.data.Data || [];
     },
     loadMode: "raw",
 })

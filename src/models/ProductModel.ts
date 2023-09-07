@@ -13,7 +13,7 @@ export class ProductModel extends BaseModel {
     CollectionID: number;
     CollectionName: string;
     CategoryID: number;
-    Categoryname: string;
+    CategoryName: string;
     Sale: number;
     DiscountPercent: number;
     TotalQuantity: number;
@@ -39,7 +39,7 @@ export class ProductModel extends BaseModel {
         this.CollectionID = 0;
         this.CollectionName = "";
         this.CategoryID = 0;
-        this.Categoryname = "";
+        this.CategoryName = "";
         this.Images = ""
         this.Material = "";
         this.ProductStatus = 1;

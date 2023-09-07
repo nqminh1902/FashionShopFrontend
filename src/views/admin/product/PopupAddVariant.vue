@@ -15,13 +15,13 @@
                             <div class="lable">
                                 Màu sắc sản phẩm<span style="color: red"> *</span>
                             </div>
-                            <base-tag-box :config="colorConfig" @onValueChange="handleColorChange"/>
+                            <base-tag-box :config="colorConfig" v-model:model-value="colorValues" ref="productColorRef" @onValueChange="handleColorChange"/>
                         </div>
                         <div class="field w-1/2 pl-4">
                             <div class="lable">
                                 Kích cỡ sản phẩm<span style="color: red"> *</span>
                             </div>
-                            <base-tag-box :config="sizeConfig" @onValueChange="handleSizeChange"/>
+                            <base-tag-box :config="sizeConfig" v-model:model-value="sizeValues" ref="productSizeRef" @onValueChange="handleSizeChange"/>
                         </div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ import {
     BaseSelectBox,
     BaseTagBox
 } from "../../../components/base";
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import CustomStore from 'devextreme/data/custom_store';
 import ProductColorApi from '@/apis/product-color/product-color-api';
 import ProductSizeApi from '@/apis/product-size/product-size-api'
@@ -56,18 +56,20 @@ const productSizeApi = new ProductSizeApi()
 let selectedColor: ProductColorModel[] = []
 let selectedSize: ProductSizeModel[] = []
 const listVariant: ProductVariantModel[] = []
-
-const dataSourceColor = new CustomStore({
-    key: "ProductColorID",
-    async load(loadOptions) {
-        const res = await productColorApi.getAll();
-        return res.data.Data.Data || [];
-    },
-    loadMode: "raw",
-})
+const productColorRef = ref()
+const productSizeRef = ref()
+let dataSourceColor: ProductColorModel[] = []
+let dataSourceSize: ProductSizeModel[] = []
 
 const colorValues = [...new Set(props.productVariant.map(variant => variant.ProductColorID))]
 const sizeValues = [...new Set(props.productVariant.map(variant => variant.ProductSizeID))]
+
+const popupConfig = ref<DxPopup>({
+    height: "auto",
+    width: 700,
+});
+const emit = defineEmits(["onSave", "onClose"])
+
 const colorConfig = ref<DxTagBox>({
     value: colorValues,
     width: '100%',
@@ -80,18 +82,6 @@ const colorConfig = ref<DxTagBox>({
     showSelectionControls: true,
 });
 
-const dataSourceSize = new CustomStore({
-    key: "ProductSizeID",
-    async load(loadOptions) {
-        const res = await productSizeApi.getAll();
-        return res.data.Data.Data || [];
-    },
-    async byKey(key) {
-        console.log(key);
-    },
-    loadMode: "raw",
-})
-
 const sizeConfig = ref<DxTagBox>({
     width: '100%',
     value: sizeValues,
@@ -103,17 +93,23 @@ const sizeConfig = ref<DxTagBox>({
     selectAllMode: 'page',
     showSelectionControls: true,
 });
-const emit = defineEmits(["onSave", "onClose"])
-
-const popupConfig = ref<DxPopup>({
-    height: "auto",
-    width: 700,
-});
-
-function handleClose(){
-    emit("onClose")
+getData()
+async function getData(){
+    const resSize = await productSizeApi.getAll();
+    if(resSize){
+        dataSourceSize = resSize.data.Data
+        productSizeRef.value.getInstance()?.option('dataSource', dataSourceSize)
+    }
+    const resColor = await productColorApi.getAll();
+    if(resColor){
+        dataSourceColor = resColor.data.Data
+        productColorRef.value.getInstance()?.option('dataSource', dataSourceColor)
+    }
 }
 
+    function handleClose(){
+        emit("onClose")
+    }
 function handleSave(){
     let id = 0
     selectedColor.forEach((color) => {

@@ -1,7 +1,7 @@
 <template>
     <dx-select-box
         ref="dxSelectBoxRef"
-        v-model="internalValue"
+        v-model:value="internalValue"
         v-bind="selectboxConfig"
     >
         <template #iconTemplate>
@@ -38,6 +38,7 @@ const emit = defineEmits<{
 
 const internalValue = computed({
     get() {
+        console.log(props.modelValue);
         return props.modelValue ?? '';
     },
     set(newValue) {

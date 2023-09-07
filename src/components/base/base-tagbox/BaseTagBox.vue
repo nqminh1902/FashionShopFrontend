@@ -11,7 +11,7 @@
 import { mergeObjects } from '@/utils';
 import { defaultBaseTagBoxConfig } from '@/constants/components/base';
 import { Icon } from '@iconify/vue';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import DxTagBox from 'devextreme-vue/tag-box';
 import i18n from '@/locales/i18n';
 const t = i18n.t;
@@ -45,7 +45,7 @@ const defaultConfig = ref<DxTagBox>({
 const tagboxConfig: DxTagBox = mergeObjects(
     defaultConfig.value || {},
     props.config
-);
+)
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: any): void;
@@ -54,6 +54,8 @@ const emit = defineEmits<{
 
 const internalValue = computed({
     get() {
+        console.log(props.modelValue);
+        
         return props.modelValue ?? '';
     },
     set(newValue) {
@@ -80,7 +82,7 @@ function handleValueChange(e:any){
 }
 // #endregion
 
-const dxTagBoxRef = ref();
+const dxTagBoxRef = ref<InstanceType<typeof DxTagBox>>();
 
 defineExpose({
     getInstance: () => dxTagBoxRef.value?.instance,
