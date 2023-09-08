@@ -126,8 +126,8 @@ import type DxTextBox from "devextreme-vue/text-box";
 import { ButtonStylingMode, ButtonType, ToastType } from "@/enums";
 import { useToastStore } from "@/stores";
 
-const { t, getLocale, setLocale } = useI18n();
 const toastStore = useToastStore();
+const { t, getLocale, setLocale } = useI18n();
 const collectionApi = new CollectionApi();
 const filterPaging = new PagingRequest();
 const totalCount = ref<number>(0);

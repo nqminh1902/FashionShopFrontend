@@ -38,7 +38,6 @@ const emit = defineEmits<{
 
 const internalValue = computed({
     get() {
-        console.log(props.modelValue);
         return props.modelValue ?? '';
     },
     set(newValue) {
@@ -47,7 +46,7 @@ const internalValue = computed({
 });
 // #endregion
 
-const dxSelectBoxRef = ref();
+const dxSelectBoxRef = ref<InstanceType<typeof DxSelectBox>>()
 
 defineExpose({
     getInstance: () => dxSelectBoxRef.value?.instance,

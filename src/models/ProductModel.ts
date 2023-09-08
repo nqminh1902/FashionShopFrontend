@@ -24,7 +24,7 @@ export class ProductModel extends BaseModel {
     ProductSizes: ProductSizeModel[];
     ProductImages: ProductImageModel[];
     ProductVariants: ProductVariantModel[];
-    ProductStatus: ProductStatusEnum;
+    Status: ProductStatusEnum;
 
     constructor() {
         super();
@@ -42,7 +42,7 @@ export class ProductModel extends BaseModel {
         this.CategoryName = "";
         this.Images = ""
         this.Material = "";
-        this.ProductStatus = 1;
+        this.Status = 1;
         this.ProductSizes = []
         this.ProductColors = []
         this.ProductImages = []

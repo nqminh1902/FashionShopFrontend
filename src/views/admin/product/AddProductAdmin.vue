@@ -88,7 +88,7 @@
                                 <div class="lable">
                                     Trạng thái<span style="color: red"> *</span>
                                 </div>
-                                <base-select-box :config="statusConfig" v-model:model-value="product.ProductStatus"/>
+                                <base-select-box :config="statusConfig" v-model:model-value="product.Status"/>
                             </div>
                             <div class="field">
                                 <div class="lable">
@@ -164,6 +164,7 @@ import PopupAddVariant from "./PopupAddVariant.vue"
 import { DxScrollView } from "devextreme-vue/scroll-view";
 import CategoryApi from "../../../apis/category/category-api";
 import CollectionApi from "@/apis/collection/collection-api";
+import ProductApi from "@/apis/product/product-api";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
@@ -187,13 +188,16 @@ import {
     DxTableContextMenu,
     DxMediaResizing
 } from 'devextreme-vue/html-editor';
-import { ButtonStylingMode, ButtonType } from "@/enums";
+import { ButtonStylingMode, ButtonType, ToastType } from "@/enums";
 import type { ProductVariantModel } from "@/models/ProductVariants";
-import { log } from "console";
+import { useToastStore } from "@/stores";
+
+const toastStore = useToastStore();
 const route = useRoute()
 const router = useRouter()
 const categoryApi = new CategoryApi();
 const collectionApi = new CollectionApi();
+const producApi = new ProductApi()
 const codeConfig = ref<DxTextBox>({})
 const nameConfig = ref<DxTextBox>({})
 const priceConfig = ref<DxNumberBox>({
@@ -392,6 +396,10 @@ function handleSaveVariant(variants: ProductVariantModel[]){
     tableRef.value.getInstance().option("dataSource", product.value.ProductVariants)
 }
 
+function handleValidate(){
+    return true
+}
+
 function handleDataBeforeSave(){
     if(productImages.value?.length > 0){
         product.value.ProductImages = productImages.value
@@ -401,10 +409,17 @@ function handleDataBeforeSave(){
     }
 }
 
-function handleSaveProduct(){
+async function handleSaveProduct(){
     handleDataBeforeSave()
-    console.log(product.value);
-    
+    if(handleValidate()){
+        const res = await producApi.insert(product.value)
+        if(res && res.data.Success){
+            toastStore.toggleToast(true, "Thêm thành công", ToastType.success);
+            router.push({name: "product-admin"})
+        }else{
+            toastStore.toggleToast(true, "Thêm thất bại", ToastType.error);
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>

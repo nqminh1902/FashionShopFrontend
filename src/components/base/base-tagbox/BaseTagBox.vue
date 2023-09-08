@@ -54,8 +54,6 @@ const emit = defineEmits<{
 
 const internalValue = computed({
     get() {
-        console.log(props.modelValue);
-        
         return props.modelValue ?? '';
     },
     set(newValue) {
