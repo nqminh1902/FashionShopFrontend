@@ -1,6 +1,8 @@
 export interface HeaderListType {
     id: number;
     title: string;
+    valueExpr?: string
+    displayExpr?: string
     children: ChildHeaderType[];
 }
 

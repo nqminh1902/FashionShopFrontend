@@ -156,13 +156,6 @@ const tableConfig = ref<DxDataGrid>({
         },
         {
             alignment: "left",
-            caption: "Mô tả",
-            dataField: "Description",
-            dataType: "string",
-            width: 200,
-        },
-        {
-            alignment: "left",
             caption: "Giá sản phẩm",
             dataField: "ProductPrice",
             dataType: "number",
@@ -178,7 +171,7 @@ const tableConfig = ref<DxDataGrid>({
         {
             alignment: "left",
             caption: "Tên danh mục",
-            dataField: "Categoryname",
+            dataField: "CategoryName",
             dataType: "string",
             width: 200,
         },

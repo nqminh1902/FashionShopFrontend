@@ -23,6 +23,7 @@ import i18n from '@/locales/i18n';
 import postRouter from './post';
 import ordersRouter from './orders';
 import productColorRouter from './product-color'
+import categoryRouter from './category';
 
 const t = i18n.t;
 
@@ -45,6 +46,7 @@ const router = createRouter({
                     },
                     component: () => import('../views/home/HomeView.vue'),
                 },
+                ...categoryRouter,
                 ...homeRouter,
                 ...aboutRouter,
                 ...contactRouter,

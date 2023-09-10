@@ -70,8 +70,8 @@
                 <base-drop-down
                     :dropdownContent="item.title"
                     :dataSource="item.children"
-                    :displayValue="'title'"
-                    :valueExpr="'id'"
+                    :displayValue="item.displayExpr"
+                    :valueExpr="item.valueExpr"
                     @changeValue="handleClickHeaderBelow"
                 />
             </li>
@@ -97,6 +97,9 @@ import { useCartStore } from "@/stores/cart";
 import { storeToRefs } from "pinia";
 import type { DxAutocomplete } from "devextreme-vue";
 import { useUserOptionStore } from "@/stores";
+import CategoryApi from "@/apis/category/category-api";
+import CollectionApi from "@/apis/collection/collection-api";
+import { PagingRequest } from "../models";
 
 // #region common
 const { t, getLocale, setLocale } = useI18n();
@@ -106,6 +109,9 @@ const { cartList } = storeToRefs(cart);
 const activeItem = ref<number>(headerBelow.value[0].id);
 const isActiveItem = (id: number) => activeItem.value === id;
 const setActiveItem = (id: number) => (activeItem.value = id);
+const categoryApi = new CategoryApi()
+const collectionApi = new CollectionApi()
+const filterPaging = new PagingRequest();
 
 const emit = defineEmits<{
     (e: "onClickCart"): void;
@@ -115,11 +121,13 @@ const emit = defineEmits<{
 
 const autoCompleteConfig = ref<DxAutocomplete>({});
 
-const totalCart = computed(() => {
-    return cartList.value.reduce((total, cartItem) => {
-        return total + cartItem.QuantityBuy;
-    }, 0);
-});
+// const totalCart = computed(() => {
+//     return cartList.value.reduce((total, cartItem) => {
+//         return total + cartItem.QuantityBuy;
+//     }, 0);
+// });
+
+const totalCart = 0
 // #endregion
 
 // #region language
@@ -130,6 +138,18 @@ const currentLanguageDisplay = ref<string>(
         ? t("header.languages.english")
         : t("header.languages.vietnamese")
 );
+getData()
+async function getData(){
+    filterPaging.CustomFilter = btoa("[['Status', '=', '1']]")
+    const resCategory = await categoryApi.getFilterPaging(filterPaging)
+    if(resCategory){
+        headerBelow.value[3].children = resCategory.data.Data.Data
+    }
+    const resCollection = await collectionApi.getFilterPaging(filterPaging)
+    if(resCollection){
+        headerBelow.value[2].children = resCollection.data.Data.Data
+    }
+}
 
 const handleSetLanguage = (language: string) => {
     let tempUnit = t("header.units.usd");
@@ -206,26 +226,15 @@ const handleActiveTabSimple = (navItem: any) => {
 };
 
 const handleActiveTabComplex = (navItem: any) => {
-    headerBelow.value.forEach((item: any) => {
-        if (item.children.length > 0) {
-            item.children.forEach((child: any) => {
-                if (child.id === navItem.id) {
-                    setActiveItem(item.id);
-                }
-            });
-        }
-    });
+    if(navItem.hasOwnProperty('CollectionID')){
+        setActiveItem(3);
+    }else if(navItem.hasOwnProperty('CategoryID')){
+        setActiveItem(4);
+    }
 };
 
 const handleClickHeaderBelow = (navItem: any) => {
-    if (typeof navItem === "object") {
-        handleActiveTabComplex(navItem);
-        router.push({
-            name: "collection",
-            params: { id: navItem.id },
-        });
-        return;
-    }
+    
     handleActiveTabSimple(navItem);
     switch (navItem) {
         case t("app.title.home"):
@@ -240,6 +249,24 @@ const handleClickHeaderBelow = (navItem: any) => {
         case t("app.title.contact"):
             router.push({ name: "contact" });
             break;
+    }
+    if (navItem instanceof Object) {
+        // debugger
+        if(navItem.hasOwnProperty('CollectionID')){
+            handleActiveTabComplex(navItem);
+            router.push({
+                name: "collection",
+                params: { id: navItem.CollectionID },
+            });
+            return;
+        }else if(navItem.hasOwnProperty('CategoryID')){
+            handleActiveTabComplex(navItem);
+            router.push({
+                name: "category",
+                params: { id: navItem.CategoryID },
+            });
+            return;
+        }
     }
 };
 // #endregion

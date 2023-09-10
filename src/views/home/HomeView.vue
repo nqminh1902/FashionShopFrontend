@@ -87,14 +87,18 @@ import { TheEmpty, TheOptions, ThePosts } from '@/components/component';
 import { dataProducts, displayBy } from '@/mocks';
 import { useI18n } from 'vue3-i18n';
 import { getUrls, translateScreen } from '@/utils';
-import { onMounted } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import PostApi from '@/apis/post/post-api';
 import type { ProductModel } from '@/models';
 import { useCompareStore } from '@/stores';
+import ProductApi from '@/apis/product/product-api';
+import { PagingRequest } from '../../models';
 
 // #region common
 const { t, getLocale } = useI18n();
 const compareStore = useCompareStore();
+const productApi = new ProductApi()
+const filterPaging = new PagingRequest();
 // #endregion
 
 // #region effects
@@ -104,9 +108,7 @@ onMounted(() => {
 // #endregion
 
 // #region Config
-const productsData: ProductModel[] = dataProducts.filter((item, index) => {
-    if (index < 10) return item;
-});
+const productsData = ref<ProductModel[]>([])
 
 const galleryConfig = ref<BaseGalleryType>({
     height: '650px',
@@ -146,7 +148,6 @@ const activeItem = ref<number>(0);
 const isActiveItem = (item: number) => activeItem.value === item;
 
 const setActiveItem = (item: number) => {
-    console.log(item);
     activeItem.value = item;
 };
 // #endregion
@@ -156,6 +157,15 @@ const handleClickCompare = (product: ProductModel) => {
     compareStore.addCompare(product);
 };
 // #endregion
+getData()
+async function getData(){
+    const res = await productApi.getFilterPaging(filterPaging)
+    if(res){
+        productsData.value = res.data.Data.Data
+    }else{
+        
+    }
+}
 
 watch(
     () => getLocale(),

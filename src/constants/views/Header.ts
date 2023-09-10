@@ -59,45 +59,17 @@ export const headerBelow = ref<HeaderListType[]>([
     {
         id: 3,
         title: t('app.title.collection'),
+        valueExpr: "CollectionID",
+        displayExpr: "CollectionName",
         children: [
-            {
-                id: 1,
-                title: t('header.collection.springCollection'),
-            },
-            {
-                id: 2,
-                title: t('header.collection.summerCollection'),
-            },
-            {
-                id: 3,
-                title: t('header.collection.autumnCollection'),
-            },
-            {
-                id: 4,
-                title: t('header.collection.winterCollection'),
-            },
         ],
     },
     {
         id: 4,
         title: t('app.title.type'),
+        valueExpr: "CategoryID",
+        displayExpr: "CategoryName",
         children: [
-            {
-                id: 5,
-                title: t('header.shop.pants'),
-            },
-            {
-                id: 6,
-                title: t('header.shop.shirt'),
-            },
-            {
-                id: 7,
-                title: t('header.shop.jacket'),
-            },
-            {
-                id: 8,
-                title: t('header.shop.hoodieSweatshirt'),
-            },
         ],
     },
     {

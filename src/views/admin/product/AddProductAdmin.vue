@@ -10,7 +10,7 @@
                         class="mr-6 cursor-pointer"
                         @click="backPage"
                     />
-                    <div class="text-3xl">Thêm sản phẩm</div>
+                    <div class="text-3xl">{{isEdit ? "Sửa sản phẩm": "Thêm sản phẩm"}}</div>
                 </div>
                 <base-button :config="buttonAddConfig" />
             </div>
@@ -76,7 +76,7 @@
                                 <div class="lable">
                                     Hình ảnh sản phẩm<span style="color: red"> *</span>
                                 </div>
-                                <base-upload-image :list-image="productImages" :allow-multiple="true" @on-upload="handleUploadFile" @on-delete="handleDeleteFile"/>
+                                <base-upload-image :list-image="productImages" :allow-multiple="true" @on-upload="handleUploadFile" @on-delete="handleDeleteFile" @image-delete="getImageDelete"/>
                             </div>
                             <div class="field">
                                 <div class="lable">
@@ -94,7 +94,7 @@
                                 <div class="lable">
                                     Mô tả<span style="color: red"> *</span>
                                 </div>
-                                <DxHtmlEditor v-bind="htmlEditerConfig">
+                                <DxHtmlEditor v-bind="htmlEditerConfig" v-model:value="product.Description">
                                     <DxToolbar :multiline="true">
                                         <DxItem name="undo" />
                                         <DxItem name="redo" />
@@ -211,12 +211,13 @@ const quantityConfig = ref<DxNumberBox>({
 const product = ref(new ProductModel())
 const materialConfig = ref<DxTextBox>({})
 const isShowPopup = ref(false)
-const listProductVariant = ref<ProductVariantModel[]>([])
-
+const isEdit = ref(false)
 const { t } = useI18n();
 const sizeValues = ['8pt', '10pt', '12pt', '14pt', '18pt', '24pt', '36pt']
 const fontValues = ['Arial', 'Georgia', 'Tahoma', 'Times New Roman', 'Verdana']
 const headerValues = [false, 1, 2, 3, 4, 5]
+let listProductVariantClone: ProductVariantModel[] = []
+let listProductImageClone: ProductImageModel[] = []
 
 const buttonConfig = ref<DxButton>({
     type: ButtonType.default,
@@ -234,13 +235,18 @@ const buttonConfig = ref<DxButton>({
 const buttonAddConfig = ref<DxButton>({
     type: ButtonType.default,
     height: 36,
-    text: "Thêm sản phẩm",
+    text: "Lưu",
     stylingMode: ButtonStylingMode.contained,
     icon: "plus",
     onClick(e) {
         handleSaveProduct()
     },
 });
+
+if(route && parseInt(route?.params.id.toString()) > 0){
+    getProductById(route.params.id)
+    isEdit.value = true
+}
 
 const tableConfig = ref<DxDataGrid>({
     columns: [
@@ -266,7 +272,6 @@ const tableConfig = ref<DxDataGrid>({
             cellTemplate: "status-template"
         },
     ],
-    dataSource: [],
     keyExpr: "ProductVariantID",
     onSelectionChanged(e) {
         console.log(e);
@@ -365,7 +370,7 @@ const statusConfig = ref<DxSelectBox>({
     searchEnabled: false,
     onValueChanged: (e) => {
         if(e){
-            product.value.ProductStatus = e.value
+            product.value.Status = e.value
         }
     },
 });
@@ -390,10 +395,33 @@ function handleDeleteFile(image: ProductImageModel[]){
     productImages.value = image
 }
 
+function getImageDelete(image: ProductImageModel){
+    product.value.ProductImages.forEach((productImage) => {
+        if(productImage.ProductImageID == image.ProductImageID){
+            productImage.State = 3
+        }
+    })
+}
+
 function handleSaveVariant(variants: ProductVariantModel[]){
     isShowPopup.value = false
     product.value.ProductVariants = variants
     tableRef.value.getInstance().option("dataSource", product.value.ProductVariants)
+}
+
+async function getProductById(id: any){
+    const res = await producApi.getByID(id)
+    if(res){
+        product.value = res.data.Data
+        productImages.value = res.data.Data.ProductImages
+        tableRef.value.getInstance().option("dataSource", product.value.ProductVariants)
+        listProductImageClone = productImages.value
+        listProductVariantClone = product.value.ProductVariants
+        
+    }else{
+        toastStore.toggleToast(true, "Lấy thoogn tin sản phẩm thất bại", ToastType.error);
+    } 
+
 }
 
 function handleValidate(){
@@ -401,23 +429,72 @@ function handleValidate(){
 }
 
 function handleDataBeforeSave(){
-    if(productImages.value?.length > 0){
-        product.value.ProductImages = productImages.value
+    if(isEdit){
+        // listProductVariantClone.forEach(variantClone => {
+        //     let isDelete = true
+        //     product.value.ProductVariants.forEach(variant => {
+        //         if(variant.ProductSizeID == variantClone.ProductSizeID && variant.ProductColorID == variantClone.ProductColorID && !variant.State){
+        //             if(variant.Quantity != variantClone.Quantity){
+        //                 variant.State = 2
+        //             }
+        //             else{
+        //                 isDelete = false
+        //             }
+        //         }  
+        //     });
+        //     if(isDelete){
+        //         product.value.ProductVariants.push({...variantClone, State: 3})
+        //     }
+        // });
+        // product.value.ProductVariants.forEach(variant => {
+        //     let isInsert = true
+        //     for (const variantClone of listProductVariantClone) {
+        //         if(variant.ProductSizeID == variantClone.ProductSizeID && variant.ProductColorID == variantClone.ProductColorID && !variant.State){
+        //             isInsert = false
+        //             return
+        //         }
+        //     }
+        //     if(isInsert){
+        //         variant.State = 1
+        //     }
+        // });
+        if(productImages.value?.length > 0){
+            productImages.value.forEach(image => {
+                if(image.State == 1){
+                    product.value.ProductImages.push(image)
+                }
+            })
+        }
+    }else{
+        if(productImages.value?.length > 0){
+            product.value.ProductImages = productImages.value
+        }
     }
-    if(listProductVariant.value?.length > 0){
-        product.value.ProductVariants = listProductVariant.value
-    }
+    product.value.TotalQuantity = product.value.ProductVariants.reduce((total, variant) => {
+        return total += variant.Quantity
+    },0)
 }
 
 async function handleSaveProduct(){
     handleDataBeforeSave()
     if(handleValidate()){
-        const res = await producApi.insert(product.value)
-        if(res && res.data.Success){
-            toastStore.toggleToast(true, "Thêm thành công", ToastType.success);
-            router.push({name: "product-admin"})
+        if(isEdit.value){
+            const res = await producApi.update(product.value.ProductID,product.value)
+            if(res && res.data.Success){
+                toastStore.toggleToast(true, "Cập nhật thành công", ToastType.success);
+                router.push({name: "product-admin"})
+            }else{
+                toastStore.toggleToast(true, "Cập nhật thất bại", ToastType.error);
+            }
+
         }else{
-            toastStore.toggleToast(true, "Thêm thất bại", ToastType.error);
+            const res = await producApi.insert(product.value)
+            if(res && res.data.Success){
+                toastStore.toggleToast(true, "Thêm thành công", ToastType.success);
+                router.push({name: "product-admin"})
+            }else{
+                toastStore.toggleToast(true, "Thêm thất bại", ToastType.error);
+            }
         }
     }
 }

@@ -14,19 +14,19 @@ interface ProductCartModel {
 
 function getCartStorage(): ProductCartModel[] {
     const cart = localStorage.getItem('cartStorage');
-    if (cart) {
-        return JSON.parse(cart);
-    } else {
+    if (!cart) {
         return [];
+    } else {
+        return JSON.parse(cart);
     }
 }
 
 function getTotalProductInCart(): number {
     const cart = localStorage.getItem('cartStorage');
-    if (cart) {
-        return JSON.parse(cart).length;
+    if (!cart) {
+        return 0;
     } else {
-        return [].length;
+        return JSON.parse(cart).length;
     }
 }
 
@@ -48,9 +48,9 @@ export const useCartStore = defineStore('cartStore', {
                 this.cartList.push({
                     ProductName: product.ProductName,
                     ProductID: product.ProductID,
-                    Price: product.Price,
+                    Price: product.ProductPrice,
                     ProductCode: product.ProductCode,
-                    ProductImage: product.ProductImage[0],
+                    ProductImage: product.ProductImages[0].ImageUrl,
                     QuantityBuy: 1,
                 });
             }

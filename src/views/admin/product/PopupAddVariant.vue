@@ -55,7 +55,7 @@ const productColorApi = new ProductColorApi()
 const productSizeApi = new ProductSizeApi()
 let selectedColor: ProductColorModel[] = []
 let selectedSize: ProductSizeModel[] = []
-const listVariant: ProductVariantModel[] = []
+const listVariant: ProductVariantModel[] = props.productVariant
 const productColorRef = ref()
 const productSizeRef = ref()
 let dataSourceColor: ProductColorModel[] = []
@@ -121,6 +121,7 @@ function handleSave(){
             variant.ProductColorName = color.ProductColorName
             variant.ProductSizeID = size.ProductSizeID
             variant.ProductSizeName = size.ProductSizeName
+            variant.State = 1
             listVariant.push(variant)
         })
     })

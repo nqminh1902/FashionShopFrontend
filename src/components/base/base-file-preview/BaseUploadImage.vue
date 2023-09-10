@@ -73,7 +73,7 @@ const props = defineProps<{
   listImage: ProductImageModel[]
   allowMultiple?: boolean
 }>()
-const emit = defineEmits(["onUpload", "onDelete"])
+const emit = defineEmits(["onUpload", "onDelete", "imageDelete"])
 // Create component
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -105,7 +105,7 @@ function handleUploadFile(error: any, file: any) {
         image.ImageUrl = resposeImage.url;
         image.ImageThumbnail = resposeImage.thumbnailUrl;
         image.PathName = resposeImage.name;
-
+        image.State = 1
         emit("onUpload", image)
       }
     })
@@ -137,6 +137,7 @@ function handleDeleteImage(image: ProductImageModel){
               .then((response) => {
                 const listImage = props.listImage.filter(item => item.ImageID !== image.ImageID)
                 emit("onDelete", listImage)
+                emit('imageDelete', {...imageDelete, State: 3})
               })
               .catch((error) => {
                   console.error(error);

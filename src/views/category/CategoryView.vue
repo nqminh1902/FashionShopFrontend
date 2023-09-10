@@ -38,7 +38,7 @@ import {
     BaseNavigation,
 } from "@/components/base";
 import { useRoute } from "vue-router";
-import { CollectionModel, PagingRequest, ProductModel } from "../../models";
+import { CategoryModel, PagingRequest, ProductModel } from "../../models";
 import ProductApi from "@/apis/product/product-api";
 import type { BaseFilterType } from "@/types";
 import { useI18n } from "vue3-i18n";
@@ -46,20 +46,20 @@ import { onMounted, ref, watch } from "vue";
 import { translateScreen } from "@/utils";
 import { TheEmpty } from "@/components/component";
 import type { BaseBreadcrumbType } from '@/types';
-import CollectionApi from "@/apis/collection/collection-api";
+import CategoryApi from "../../apis/category/category-api";
 
 
 // #region common
 const productsData = ref<ProductModel[]>([]);
 const productApi = new ProductApi();
-const collectionApi = new CollectionApi();
+const categoryApi = new CategoryApi();
 const filterPaging = new PagingRequest();
 const totalRecord = ref<number>(0)
-const collection = ref<CollectionModel>(new CollectionModel())
+const category = ref<CategoryModel>(new CategoryModel())
 const { t, getLocale } = useI18n();
 
 const breadcrumbConfig = ref<BaseBreadcrumbType>({
-    currentPage: collection.value.CollectionName,
+    currentPage: category.value.CategoryName,
 });
 // #endregion
 
@@ -76,7 +76,7 @@ watch(
     () => route.params.id,
     async (newVal) => {
         if (newVal) {
-            filterPaging.CustomFilter = btoa(`[["CollectionID", "=", "${newVal}"]]`)
+            filterPaging.CustomFilter = btoa(`[["CategoryID", "=", "${newVal}"]]`)
             const res = await productApi.getFilterPaging(
                 filterPaging
             );
@@ -86,10 +86,10 @@ watch(
             }else{
                 
             }
-            const resCollection = await collectionApi.getByID(+newVal)
+            const resCollection = await categoryApi.getByID(+newVal)
             if(resCollection){
-                collection.value = resCollection.data.Data
-                breadcrumbConfig.value.currentPage = collection.value.CollectionName
+                category.value = resCollection.data.Data
+                breadcrumbConfig.value.currentPage = category.value.CategoryName
                 
             }else{
                 

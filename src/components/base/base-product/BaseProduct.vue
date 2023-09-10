@@ -3,8 +3,8 @@
         <div class="product-img cursor-pointer" @click="goDetailProduct()">
             <img
                 style="width: 100%; height: 100%"
-                src="../../../assets/images/demo/75.jpg"
-                alt=""
+                :src="`${product.Images.split(';')[0]}`"
+                :alt="product.ProductName"
             />
             <div class="option-btn">
                 <div
@@ -50,7 +50,7 @@
                 <div
                     class="out-of-stock"
                     :style="{
-                        display: product.Quantity >= 1 ? 'none' : 'block',
+                        display: product.TotalQuantity >= 1 ? 'none' : 'block',
                     }"
                 >
                     {{ t("base.product.outOfStock") }}
@@ -72,13 +72,13 @@
                 style="margin-top: 0"
             >
                 <span style="text-decoration: line-through"
-                    >{{ formatCurrency(product.Price) }}
+                    >{{ formatCurrency(product.ProductPrice) }}
                 </span>
                 <span style="margin-left: 8px">{{
                     formatCurrency(product.Sale)
                 }}</span>
             </div>
-            <p class="" v-else>{{ formatCurrency(product.Price) }}</p>
+            <p class="" v-else>{{ formatCurrency(product.ProductPrice) }}</p>
         </div>
         <div class="product-button">
             <base-button ref="baseButtonRef" :config="buttonConfig" />
@@ -97,7 +97,7 @@
                 <div class="product-detail-img">
                     <img
                         style="width: 100%; height: 100%"
-                        src="../../../assets/images/demo/75.jpg"
+                        :src="`${product.Images.split(';')[0]}`"
                         alt=""
                     />
                 </div>
@@ -113,7 +113,7 @@
                             >{{ t("base.product.availability")
                             }}{{ t("sign.colon") }}
                         </strong>
-                        {{ product.Quantity }}
+                        {{ product.TotalQuantity }}
                     </div>
                     <div class="product-detail-name">
                         {{ product.ProductName }}
@@ -127,18 +127,18 @@
                             <span
                                 class="price-old"
                                 style="text-decoration: line-through"
-                                >{{ formatCurrency(product.Price) }}
+                                >{{ formatCurrency(product.ProductPrice) }}
                             </span>
                             <span style="margin-left: 8px">{{
                                 formatCurrency(product.Sale)
                             }}</span>
                         </div>
                         <p class="" v-else>
-                            {{ formatCurrency(product.Price) }}
+                            {{ formatCurrency(product.ProductPrice) }}
                         </p>
                     </div>
                     <div class="product-detail-description">
-                        {{ product.Description }}
+                        {{ product.QuickDescription }}
                     </div>
                     <div class="product-detail-cart">
                         <base-number-box
@@ -190,7 +190,7 @@ import { BaseButton, BaseTooltip, BasePopup, BaseNumberBox } from "..";
 import { formatCurrency } from "../../../utils";
 import { popupConfig } from "@/constants/components/base";
 import { DxTooltip, DxNumberBox, DxButton } from "devextreme-vue";
-import { PositionTooltip } from "@/enums";
+import { PositionTooltip, ToastType } from "@/enums";
 import { useI18n } from "vue3-i18n";
 import { Icon } from "@iconify/vue";
 import { useCartStore } from "@/stores";
@@ -213,13 +213,13 @@ const props = defineProps<{
 const buttonConfig = ref<DxButton>({
     width: 200,
     icon: "fa-solid fa-cart-shopping",
-    disabled: props.product.Quantity ? false : true,
-    text: props.product.Quantity
+    disabled: props.product.TotalQuantity ? false : true,
+    text: props.product.TotalQuantity
         ? t("base.product.addToCart")
         : t("base.product.outOfStock"),
     onClick(e) {
         cart.addToCart(props.product);
-        toastStore.toggleToast(true);
+        toastStore.toggleToast(true, "Thêm vào giở hàng thành công", ToastType.success);
     },
 });
 
@@ -233,7 +233,7 @@ watch(
                 .getInstance()
                 ?.option(
                     "text",
-                    props.product.Quantity
+                    props.product.TotalQuantity
                         ? t("base.product.addToCart")
                         : t("base.product.outOfStock")
                 );
@@ -263,7 +263,7 @@ const quickViewTooltip = ref<DxTooltip>({
 let quantityPurchased: number = 0;
 
 const numberBoxConfig: DxNumberBox = {
-    max: props.product.Quantity,
+    max: props.product.TotalQuantity,
     width: 100,
     height: 38,
     value: quantityPurchased,

@@ -10,7 +10,7 @@
                 @click="handleSetValue(dropdownContent)"
                 >{{ dropdownContent }}</span
             >
-            <Icon v-if="dataSource.length > 0" icon="ep:arrow-down-bold" />
+            <Icon v-show="dataSource.length > 0" icon="ep:arrow-down-bold" />
         </div>
         <ul class="dropdown-list">
             <li
@@ -35,6 +35,7 @@
 
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
+import { ref, watch } from 'vue';
 
 // #region common
 const props = defineProps<{
